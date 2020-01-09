@@ -1,0 +1,76 @@
+<% include header.ejs %>
+
+  <body>
+<div class="custom-wrapper pure-g" id="menu">
+    <div class="pure-u-1 pure-u-md-1-5">
+        <div class="pure-menu">
+            <a href="#" class="pure-menu-heading custom-brand">MPD.FM</a>
+            <a href="#" class="custom-toggle" id="toggle"><s class="bar"></s><s class="bar"></s></a>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-4-5">
+        <div class="pure-menu pure-menu-horizontal custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item pure-menu-active"><a href="/radio" class="pure-menu-link">Radio</a></li>
+                <li class="pure-menu-item"><a href="/pl" class="pure-menu-link">Playlists</a></li>
+                <li class="pure-menu-item"><a href="/mb" class="pure-menu-link">Mucis Folders</a></li>
+                <li class="pure-menu-item"><a href="/stats" class="pure-menu-link">Stats</a></li>
+
+            </ul>
+        </div>
+    </div>
+<!--     <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu pure-menu-horizontal custom-menu-3 custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Yahoo</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">W3C</a></li>
+            </ul>
+        </div>
+    </div> -->
+</div>    
+
+
+<!--     <div class="pure-g menuheader" style="display:none;">
+      <div class="pure-u-1 menuheader-context">
+        <a href="/">Radio</a>
+        <a href="/playlist">Playlists</a>
+      </div>
+    </div> -->
+<!--     <div class="sl">
+      <p>asd</p>
+    </div> -->
+
+<!-- <div class="main"> -->
+<div class="content">
+ <!--    <div id="app"> -->
+
+
+        <div id="rs">
+          <% if (item.length) { %>
+            <% item.forEach(function(item){ %>
+              <div class="pure-g" onclick="onPlayStation('<%= item.stream %>')">
+                <div class="pure-u-1-4 l-box">
+                  <div class="station-logo">
+                    <img class="pure-img" src="<%= item.logo %>" alt="<%= item.station %>">
+                  </div>
+                </div>
+                <div class="pure-u-3-4 l-box2 station-text">
+                  <div class="station-text-inside">
+                    <p class="station-heading"><%= item.station %></p>
+                    <p class="clip"><%= item.desc %></p>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+<% include player.ejs %>
+</div>
+
+<% include footer.ejs %>
+
+
+  </body>
+</html>

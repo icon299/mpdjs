@@ -1,0 +1,66 @@
+{
+  "name": "mpd.fm",
+  "version": "0.1.0",
+  "description": "A MPD web server and client to listen to your favorite online radio stations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/www.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/florianheinemann/MPD.FM.git"
+  },
+  "keywords": [
+    "MPD",
+    "client",
+    "server"
+  ],
+  "author": {
+    "name": "Florian Heinemann"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/florianheinemann/MPD.FM/issues"
+  },
+  "homepage": "https://github.com/florianheinemann/MPD.FM#readme",
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "ejs": "^2.6.1",
+    "express": "~4.15.5",
+    "line-reader": "^0.4.0",
+    "morgan": "~1.9.0",
+    "mpd": "~1.3.0",
+    "serve-favicon": "~2.4.5",
+    "ws": "^4.0.0"
+  },
+  "gitHead": "89fae0e402fa332c2b4312b7311aea8bbf891439",
+  "_id": "mpd.fm@0.1.0",
+  "_npmVersion": "5.6.0",
+  "_nodeVersion": "9.4.0",
+  "_npmUser": {
+    "name": "florianheinemann",
+    "email": "florian.heinemann@gmail.com"
+  },
+  "dist": {
+    "integrity": "sha512-F85XX0O9lCerxhjNAfqfWRYj3navu0f9eGTyso5iLqojItzZKIkWzxTzmBsLdbMvc9zXZlVophXMGSH1SUDcHA==",
+    "shasum": "aa45161f58716d15949b3dcd0fd569a52dce82b0",
+    "tarball": "https://registry.npmjs.org/mpd.fm/-/mpd.fm-0.1.0.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "florianheinemann",
+      "email": "florian.heinemann@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/mpd.fm-0.1.0.tgz_1517183485037_0.7926974331494421"
+  },
+  "directories": {},
+  "_shasum": "aa45161f58716d15949b3dcd0fd569a52dce82b0",
+  "_resolved": "https://registry.npmjs.org/mpd.fm/-/mpd.fm-0.1.0.tgz",
+  "_from": "mpd.fm@latest"
+}

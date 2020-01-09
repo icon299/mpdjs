@@ -1,0 +1,249 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <title>MPD.FM</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <link rel="stylesheet" href="css/pure-min.css">
+
+    <!-- <link rel="stylesheet" href="css/font.css"> -->
+
+    <style>
+    @font-face {
+        font-family: 'Oswald';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Oswald Regular'), local('Oswald-Regular'), url(css/fonts/Oswald-Light.ttf);
+    }
+    /* cyrillic */
+    @font-face {
+        font-family: 'Oswald';
+        font-style: normal;
+        font-weight: 500;
+        src: local('Oswald Medium'), local('Oswald-Medium'), url(css/fonts/Oswald-Regular.ttf);
+    }
+
+    .content {
+        margin: 0px auto;
+        padding-left: 1em;
+        padding-right: 1em;
+        max-width: 640px;
+        text-align: center;
+    }
+    html, button, input, select, textarea,
+    .pure-g [class *= "pure-u"] {
+        /* color: #777; */
+        font-size: 0.9em;
+        line-height: 1.5;
+        font-family: 'Oswald', sans-serif;
+    }
+    .l-box {
+        padding: 0;
+        float: left;
+    }
+    .c-box {
+        padding: 0em;
+    }
+    .r-box {
+        padding: 0;
+        float:right;
+    }
+    .cover {
+/*    position:relative;
+    overflow:hidden;*/
+    /*padding-bottom:100%;*/
+
+    background-color: white;
+
+    }
+    .cover > img, .cover > div {
+    /*position:absolute;*/
+    /*top: 50%;*/
+/*    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);*/
+    /*width: 80%;*/
+    width: 250px;
+    max-width: 250px;
+    /*padding: 5%;*/
+        border: 1px solid rgb(201, 201, 201);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+
+    }
+
+    p {
+        margin: 0.2em;
+    }
+
+    .info-heading {
+        font-size: 20px;
+        font-weight: 500;
+    }
+    .info-track {
+        font-size: medium;
+        color: #932cc9;
+    }
+
+    .menu-img {
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+    }
+
+
+      .bar {
+        background-color: #932cc9;
+      }
+
+      .nanobar {
+       background-color: #E6E6E6;
+       height: 2px; 
+      }
+
+      .progress .progress-icon{
+    width: 30px;
+    height: 30px;
+    line-height: 25px;
+    border-radius: 50%;
+    font-size: 13px;
+    position: absolute;
+    top: -14px;
+    right: 0;
+    background: #fff;
+    border-width: 3px;
+    border-style: solid;
+}
+
+    .pure-button
+    {        
+        border-radius: 5px;
+        margin:10px;
+    }
+
+#myProgress {
+  width: 100%;
+  background-color: #CCC;
+  height: 2px;
+}
+
+#myBar {
+  width: 50%;
+  height: 2px;
+  background-color: #932cc9;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: #AAA;
+    border-radius: 50%;
+    position: relative;
+    top: -4px;
+    margin-left: 100%;
+}
+
+.tracktime-full {
+    color: #aaa;
+    float: left;
+}
+.tracktime-left {
+    color: #aaa;
+    float: right;
+}
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="content">
+    <div class="custom-wrapper pure-g">
+       
+            <div class="pure-u-2-3">
+            
+            </div>
+            <div class="pure-u-1-3 menu-img">
+
+            <img src="img/idown_circle_16.png" alt="" class="pure-img-responsive r-box" style="">                    
+            </div>
+            
+
+        
+        <div class="pure-u-1 cover">
+            <img src="img/station_logo/D100.png" alt="" class="pure-img-responsive">
+        </div>
+        <div class="pure-u-1" >
+            <div class="pure-u-1-6">
+                
+            </div>
+<!--             <div class="pure-u-4-6" id="progressbar">
+                
+            </div> -->
+            <div class="pure-u-1-6">
+                <!-- <span class="r-box">1</span> -->
+            </div>
+         <div>
+            <div id="myProgress">
+                <div id="myBar">
+                    <div class="dot"></div>
+                </div>
+            </div>
+            <span class="tracktime-full">3:48</span>
+            <span class="tracktime-left">1:52</span>
+        </div>   
+
+            
+        </div>
+        <div class="pure-u-1-1">
+            <p class="info-heading">Album Name</p>
+            <p class="info-track">Track Name</p>
+        </div>
+        <div class="pure-u-1">
+            
+            <img src="img/irewind.png" alt="" class="pure-img-responsive" style="padding-bottom: 8px;">
+            <img src="img/iplay.png" alt="" class="pure-img-responsive" style="padding-left: 20px;padding-right: 20px;">
+            <img src="img/iforward.png" alt="" class="pure-img-responsive" style="padding-bottom: 8px;">
+
+        </div>
+<!--         <div class="pure-u-1">
+            <a class="pure-button" href="#">Shuffle</a>
+            <a class="pure-button" href="#">Random</a>
+            <a class="pure-button" href="#">Repeat</a>
+        </div> -->
+
+    </div>
+    </div>
+
+    <script>
+    var i = 0;
+function move() {
+  if (i == 0) {
+    i = 1;
+    var elem = document.getElementById("myBar");
+    var width = 1;
+    var id = setInterval(frame, 10);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        i = 0;
+      } else {
+        width++;
+        elem.style.width = width + "%";
+      }
+    }
+  }
+}
+</script>
+    
+  </body>
+</html>

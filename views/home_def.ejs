@@ -1,0 +1,255 @@
+<% include ./header.ejs %>
+
+    <!-- <link rel="stylesheet" href="css/font.css"> -->
+
+    <style>
+/*    @font-face {
+        font-family: 'Oswald';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Oswald Regular'), local('Oswald-Regular'), url(css/fonts/Oswald-Light.ttf);
+    }
+    @font-face {
+        font-family: 'Oswald';
+        font-style: normal;
+        font-weight: 500;
+        src: local('Oswald Medium'), local('Oswald-Medium'), url(css/fonts/Oswald-Regular.ttf);
+    }*/
+
+
+/*    html, button, input, select, textarea,
+    .pure-g [class *= "pure-u"] {
+         color: #777; 
+        font-size: 0.9em;
+        line-height: 1.5;
+        font-family: 'Oswald', sans-serif;
+    }*/
+    .home-content {
+        margin: 0px auto;
+        padding-left: 2px;
+        padding-right: 2px;
+        max-width: 768px;
+        
+    }
+    .l-box {
+        padding: 0;
+        float: left;
+    }
+    .c-box {
+        padding: 0em;
+    }
+    .r-box {
+        padding: 0;
+        float:right;
+    }
+    .center {
+        text-align: center; 
+    }
+    .cover {
+    position:relative;
+    overflow:hidden;
+    margin-top: 1em;
+    /*padding-bottom:100%;*/
+
+    background-color: white;
+/*    border: 1px solid rgb(201, 201, 201);
+    border-radius: 5px;*/
+    display: block;
+    }
+    .cover > img, .cover > div {
+    /*position:absolute;*/
+    /*top: 50%;*/
+/*    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);*/
+    /*width: 80%;*/
+    height: 150px;
+    /*max-width: 200px;*/*/
+    /*padding: 5%;*/
+    border: 1px solid rgb(201, 201, 201);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+
+    }
+
+    p {
+        /*margin: 0.1em;*/
+        margin: 0;
+    }
+
+   p.clip {
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    text-overflow: ellipsis; /* Добавляем многоточие */
+   }
+
+    .info-heading {
+        font-size: 18px;
+        font-weight: 500;
+        padding: 0 4px;
+    }
+    .info-track {
+        font-size: medium;
+        color: #932cc9;
+        padding: 0 4px;
+    }
+
+    .menu-img {
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+    }
+
+
+      .bar {
+        background-color: #932cc9;
+      }
+
+      .nanobar {
+       background-color: #E6E6E6;
+       height: 2px; 
+      }
+
+      .progress .progress-icon{
+    width: 30px;
+    height: 30px;
+    line-height: 25px;
+    border-radius: 50%;
+    font-size: 13px;
+    position: absolute;
+    top: -14px;
+    right: 0;
+    background: #fff;
+    border-width: 3px;
+    border-style: solid;
+}
+
+    .pure-button
+    {        
+        border-radius: 5px;
+        /*margin:10px;*/
+    }
+
+#myProgress {
+  width: 100%;
+  background-color: #CCC;
+  height: 2px;
+}
+
+#myBar {
+  width: 50%;
+  height: 2px;
+  background-color: #932cc9;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: #AAA;
+    border-radius: 50%;
+    position: relative;
+    top: -4px;
+    margin-left: 100%;
+}
+
+.tracktime-full {
+    color: #aaa;
+    float: left;
+}
+.tracktime-left {
+    color: #aaa;
+    float: right;
+}
+.song-info-text {
+    overflow: hidden;
+}
+
+a.button.icon {
+padding-left: 11px;
+}
+
+.buticon {
+/*padding-left: 36px;*/
+background: url(img/playlist_play_2.png) no-repeat 0 -4px;
+}
+
+</style>
+
+</head>
+
+<body>
+<!-- <div class="custom-wrapper pure-g" id="menu">
+    <div class="pure-u-1 pure-u-md-1-5">
+        <div class="pure-menu">
+   
+            <a href="javascript:history.back()" class="pure-menu-heading custom-brand">Back</a>
+            <a href="#" class="custom-toggle" id="toggle"><s class="bar"></s><s class="bar"></s></a>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-4-5">
+
+        <div class="pure-menu pure-menu-horizontal custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/Home" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">Radio</a></li>
+                <li class="pure-menu-item"><a href="/pl" class="pure-menu-link">Playlists</a></li>
+                <li class="pure-menu-item"><a href="/mb" class="pure-menu-link">Mucis Folders</a></li>
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">Settings</a></li>
+
+            </ul>
+        </div>
+    </div>
+</div>  -->
+<div class="log-content">
+    
+
+<div class="log-message">
+    <p>12345</p>
+</div>
+</div>   
+<div class="home-content">
+    <div class="pure-g">
+       
+        <div class="pure-u-1-1  center">
+            
+            <div class="cover">
+                <!-- <img src="img/station_logo/chromaclrock.jpg" alt="" class="pure-img-responsive" id="station_logo2"> -->
+                <img src="img/station_logo/chromaclrock.jpg">
+            </div>
+            
+        </div>
+    
+        <div class="pure-u-1-1">
+            <div class="song-info-text center">
+                <p id="elapsed"></p>
+                <p class="info-heading" id="station2">***88888888888888888 88888888888888888888888888888888 666666666 66666666666 4444444444444444444</p>
+                <p class="info-track " id="song2">*** ******************* ************ ************ ******************* ******************* *********** ***************** ******** 111 2 dfdf fglfgooff gflgfldgfd fgnmj jkjkjk</p>
+            </div>
+        </div>
+        <div class="pure-u-1-1 center">
+            <img src="img/irewind.png" alt="" class="pure-img-responsive" style="padding-bottom: 8px;" onclick="doPrev()">
+            <img src="img/iplayd.png" alt="" id="playStatus" class="pure-img-responsive" style="padding-left: 20px;padding-right: 20px;" onClick="onPlayButton()">
+            <img src="img/iforward.png" alt="" class="pure-img-responsive" style="padding-bottom: 8px;" onclick="doNext()">
+        </div>
+        <div class="pure-u-1-1 center" style="background-color: beige;">
+            <a class="button" href="#">Lib</a>
+            <div class="pure-button-group" role="group">
+            <a id="stat" class="pure-button" href="#">Library</a>
+            <a class="pure-button" href="/">Radio</a>
+            <a class="pure-button" href="#">Folders</a>
+            <a class="pure-button" href="#">Quenue</a>
+            <a class="pure-button" href="#">Set</a>
+            <button class="pure-button">
+    <i class="buticon"></i>
+    Settings
+</button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+<% include ./footer.ejs %>
+    
+</body>
+</html>

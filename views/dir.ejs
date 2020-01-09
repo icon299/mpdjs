@@ -1,0 +1,124 @@
+<% include ./header.ejs %>
+
+<body>
+
+<div class="custom-wrapper pure-g" id="menu">
+    <div class="pure-u-1 pure-u-md-1-5">
+        <div class="pure-menu">
+   
+            <a href="javascript:history.back()" class="pure-menu-heading custom-brand">Back</a>
+            <a href="#" class="custom-toggle" id="toggle"><s class="bar"></s><s class="bar"></s></a>
+        </div>
+    </div>
+    <div class="pure-u-1 pure-u-md-4-5">
+        <div class="pure-menu pure-menu-horizontal custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/home" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">Radio</a></li>
+                <li class="pure-menu-item"><a href="/pl" class="pure-menu-link">Playlists</a></li>
+                <li class="pure-menu-item"><a href="/mb" class="pure-menu-link">Mucis Folders</a></li>
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">Settings</a></li>
+
+            </ul>
+        </div>
+    </div>
+<!--     <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu pure-menu-horizontal custom-menu-3 custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Yahoo</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">W3C</a></li>
+            </ul>
+        </div>
+    </div> -->
+</div>    
+
+<div class="content" >
+  <div id="app">
+<!--       <div class="log-message" style="display:none;">
+        <div class="pure-g log-content" >
+          <div class="pure-u-1 l-box">
+            <p class="log-heading" id="error-container">...</p>
+          </div>
+        </div>
+      </div> -->
+    <div id="rs">
+      <% if (item.length) { %>
+        <% item.forEach(function(item){ %>
+        <% if (item.type !== 'playlist') { %>
+          <div class="pure-g">
+            <div class="pure-u-1-4 l-box">
+              <% if (item.parent == '') { %>
+                <a href='mb?d=<%=item.name%>'> 
+                  <!-- <div class="station-logo"> -->
+                  <!-- onclick='location.href="/mb?d=<%=item.name%>";'> -->
+              <%} else { %>
+                <a href='mb?d=<%=item.parent%>/<%=item.name%>'> 
+                  <!-- <div class="station-logo"> -->
+                  <!-- onclick='location.href="/mb?d=<%=item.parent%>/<%=item.name%>";'> -->
+              <%}%>
+                  <div class="station-logo">
+                    <% if (item.type == 'directory') { %> 
+                      <img class="pure-img" src="/img/folder.png" alt="">
+                    <%} else %>
+                      <% if (item.type == 'file') { %> 
+                        <img class="pure-img" src="/img/double_note.png" alt="">
+                      
+                    <%} else %> 
+                      <% if (item.type == 'playlist') { %> 
+                        <img class="pure-img" src="/img/playlist.png" alt="">
+                      <%}%>
+                  </div>
+                  </a>
+            </div>
+              
+              <div class="pure-u-3-4" style="padding-top: 0.5em;">
+                <div class="station-text-inside">
+                  <p class="station-heading"><%= item.name %></p>
+                                  <img class="" src="/img/add_folder.png" alt="" style="margin-top: 1.5em;" onclick="onAddToQuenue('<%=item.parent%>/<%=item.name%>')">
+                  
+                </div>
+              </div>
+              
+            </div>
+        <% } %>
+        <% }) %>
+      <% } %>
+    </div> 
+    <div class="pure-g blank-radio">
+          <div class="pure-u-1-5 l-box">
+            <div class="station-logo">
+              <img class="pure-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+            </div>
+          </div>
+          <div class="pure-u-4-5 l-box">
+          </div>
+        </div>
+      </div>
+          <div class="player">
+        <div class="pure-g player-content" style="
+    max-width: 600px;
+">
+          <div class="pure-u-1-5 l-box">
+            <div class="station-logo">
+              <img class="pure-img" id="station_logo" src="" alt="item.station">
+              <!-- <img class="pure-img play-button" id="PlayerButton" src="img/pause.svg"> -->
+            </div>
+          </div>
+          <div class="pure-u-4-5 r-box station-text">
+            <div class="station-text-inside">
+              <p class="station-heading" id="station">{{ station name }}</p>
+              <p id="song">{{ song }}</p>
+              <p class="station-heading" id="elapsed">{elapsed}</p>
+            </div>
+          </div>
+        </div>
+      </div> 
+  </div>
+</div>
+
+
+<% include ./footer.ejs %>
+
+
+  </body>
+</html>

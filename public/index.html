@@ -1,0 +1,98 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <title>MPD.FM</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="site.webmanifest">
+        <link rel="apple-touch-icon" href="favicon.png">
+
+<!--         <link href="https://fonts.googleapis.com/css?family=Oswald:400,500&amp;subset=cyrillic" rel="stylesheet"> -->
+
+        <!-- <link rel="stylesheet" href="css/base-min.css"> -->
+
+        <link rel="stylesheet" href="css/pure-min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <!-- <link rel="stylesheet" href="css/font.css"> -->
+
+      <script id="stationscript" type="text/template">
+        <% if (item.length) { %>
+          <% item.forEach(function(item){ %>
+                <div class="pure-g" onclick="onPlayStation('<%= item.stream %>')">
+                    <div class="pure-u-1-4 l-box">
+                        <div class="station-logo">
+                                <img class="pure-img" src="<%= item.logo %>" alt="<%= item.station %>">
+                        </div>
+                    </div>
+                    <div class="pure-u-3-4 l-box2 station-text">
+                        <div class="station-text-inside">
+                            <p class="station-heading"><%= item.station %></p>
+                            <p><%= item.desc %></p>
+                        </div>
+                    </div>
+                </div>
+          <% }) %>
+        <% } %>
+      </script>
+
+    </head>
+    <body>
+
+
+      <div id="app">
+
+          <div class="content">
+              <div id="rs">
+
+              </div>
+
+
+                <div class="pure-g blank-radio">
+                    <div class="pure-u-1-4 l-box">
+                        <div class="station-logo">
+                            <img class="pure-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                        </div>
+                    </div>
+                    <div class="pure-u-3-4 l-box">
+                    </div>
+                </div>
+          </div>
+          <div class="player">
+              <div class="pure-g player-content">
+
+                      <div class="pure-u-1-4 l-box">
+                          <div class="station-logo">
+                            <img class="pure-img" id="station_logo" src="" alt="item.station">
+                            <!-- <img class="pure-img play-button" id="PlayerButton" src="img/pause.svg"> -->
+                          </div>
+                      </div>
+
+                      <div class="pure-u-3-4 r-box station-text">
+                        <div class="station-text-inside">
+                            <p class="station-heading" id="station">{{ station name }}</p>
+                            <p class="station-heading" id="elapsed">{elapsed}</p>
+                            <p class="station-heading" id="song">{{ song }}</p>
+
+                        </div>
+                      </div>
+              </div>
+          </div>
+
+
+        </div>
+
+      <!-- <script src="js/plugins.js"></script> -->
+      <script src="js/vendor/reconnecting-websocket.min.js"></script>
+      <script src="js/ejs.min.js"></script>
+      <script src="js/vue_sample.js"></script>
+
+      <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+
+    </body>
+</html>

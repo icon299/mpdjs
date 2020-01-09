@@ -1,0 +1,433 @@
+
+
+.station-logo {
+    position:relative;
+    overflow:hidden;
+    padding-bottom:100%;
+    border: 1px solid rgb(201, 201, 201);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    background-color: white;
+    display: block;
+}
+
+.blank-radio {
+   visibility: hidden;
+   padding-right: 2px;
+    padding-left: 2px;
+    padding-top: 0.5em;
+}
+
+.station-logo > img, .station-logo > div {
+    position:absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    width: 90%;
+    max-width: 90%;
+    padding: 5%;
+    display: block;
+}
+
+.active-station {
+    opacity: 0.5;
+}
+
+.play-button {
+    opacity: 0.8;
+}
+
+.spinner {
+    text-align: center;
+}
+
+.spinner-frame {
+    width: 100%;
+    text-align: center;
+}
+
+.spinner > div {
+    width: 30%;
+    padding-bottom: 30%;
+    background-color: #333;
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+}
+@-webkit-keyframes sk-bouncedelay {
+    0%, 80%, 100% { -webkit-transform: scale(0) }
+    40% { -webkit-transform: scale(1.0) }
+}
+@keyframes sk-bouncedelay {
+    0%, 80%, 100% { -webkit-transform: scale(0); transform: scale(0); }
+    40% { -webkit-transform: scale(1.0); transform: scale(1.0); }
+}
+
+.station-text {
+    /*display: flex;*/
+    display: block;
+    width: 75%;
+}
+.station-logo {
+    display: flex;
+
+    /*display: block;*/
+}
+.station-logo2 {
+    display: flex;
+
+    /*display: block;*/
+}
+.station-text-inside {
+    margin-bottom: auto;
+    margin-top: auto;
+    overflow: hidden;
+    /*width: 100%*/
+
+}
+
+.station-text-inside > p {
+
+    margin: 0;
+}
+
+.station-heading {
+    font-weight: 500;
+    /*width: 100%*/
+    overflow: hidden;
+}
+
+.error-heading {
+    font-weight: 500;
+    text-align: center;
+    margin: 0px 0px;
+}
+
+.sep-line {
+    margin: 5px 0px;
+    height: 1px;
+    border: medium none;
+    background-color: rgb(201, 201, 201);
+}
+
+.sep-line:last-of-type {
+    visibility: hidden;
+}
+
+.player {
+    background-color: black;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding-right: 2px;
+    padding-left: 2px;
+    height:auto;
+}
+
+.player-content {
+    max-width: 768px;
+    margin: 2px auto;
+}
+
+.error-message {
+    background-color: rgb(230, 51, 51);
+    color: white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding-right: 1em;
+    padding-left: 1em;
+    /*margin: 0 0.5em;*/
+    z-index: 100;
+}
+
+.error-content {
+    max-width: 768px;
+    margin: 5px auto;
+}
+
+.content {
+    margin: 0px auto;
+    padding-left: 0px;
+    padding-right: 0px;
+    max-width: 768px;
+    margin-top: 2.11em;
+}
+
+.pure-g > div {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.l-box {
+    padding: 0.4em;
+    float: left;
+}
+
+.l-box2 {
+    padding: 0.5em;
+
+}
+.r-box {
+    padding: 0.5em;
+
+
+}
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+    /* color: #777; */
+    font-size: 0.9em;
+    line-height: 1.5;
+    font-family: 'Oswald', sans-serif;
+
+}
+.menuheader {
+    background-color: black;
+    color: white;
+    /*position: relative;*/
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding-right: 1em;
+    padding-left: 1em;
+      overflow: hidden;
+  /*background-color: #333;*/
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+  height: 30px;
+  z-index: 1;
+}
+
+.menuheader-context {
+    max-width: 768px;
+    margin: 5px auto;
+}
+
+.input-field {
+    padding: .2em !important;
+    color: black;
+}
+
+.add-station {
+    background-color: white;
+    border-radius: 0px;
+    float: right;
+    margin-left: 1em;
+}
+
+.log-message {
+    background-color: #932cc9;
+    color: white;
+    /*position: fixed;*/
+    top: 0;
+    right: 0;
+    left: 0;
+    padding-right: 1em;
+    padding-left: 1em;
+    /*margin: 0 0.5em;*/
+    z-index: 100;
+}
+
+.log-content {
+    max-width: 768px;
+    margin: 0px auto;
+}
+
+.log-heading {
+    font-weight: 500;
+    text-align: center;
+    margin: 0px 0px;
+}
+ .sl {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+ }
+    p.clip {
+      white-space: nowrap;  /*Запрещаем перенос строк */
+      overflow: hidden;  /*Обрезаем все, что не помещается в область */
+      text-overflow: ellipsis;  /*Добавляем многоточие */
+    }
+ul.zebra {
+      list-style-type: none;
+      padding: 1em ;
+      margin: 0px 0;
+
+    }
+    .zebra li {
+      padding: .3rem 0.5rem;
+      border-bottom: 1px solid rgba(0,0,0,.125);
+      /*border-bottom: 1px solid rgba(0,0,0,.125);            */
+    }
+    .zebra li:first-child {
+        /*border-top: 1px solid rgba(0,0,0,.125);*/
+      /*background-color: #FFF;*/
+    }
+    .zebra li:nth-child(odd) {
+      /*background-color: #EEE;*/
+    }
+    .zebra li:nth-child(even) {
+      /*background-color: #FFF;*/
+    }
+
+    .d-flex {
+    /*display: -ms-flexbox !important;*/
+      display: flex !important;
+    }
+    .justify-content-between {
+    /*-ms-flex-pack: justify !important;*/
+    /*justify-content: center !important;*/
+    }
+    .grow {
+      flex-grow: 2;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0 10px;
+    }
+    .shrink {
+      flex-shrink: 0;
+      width: 0.75em;
+      text-align: right;
+      padding-right: 10px;
+    }
+    .l-padding {
+      padding-left: 1em;
+    }
+
+    .colorgray {
+      color: #AAA;
+    }
+
+    .active_li {
+      background-color: #f2f2f2cc;
+    }
+    .quenue_li {
+        display: inline-block;
+    }
+
+    .stats {
+        margin: 0px; 
+    }
+    .stats span  {
+        margin: 2px;
+        /*display: inline-block;*/
+        
+        float: right;
+    }
+    .aleft  {
+        margin: 2px;
+        display: inline-block;
+        width: 120px;
+        text-align: left;
+    }
+
+    .div-center {
+        text-align: center;
+
+        /*padding: 1em;*/
+    }
+    .div-center p {
+        padding: 5px;
+        margin: 0;
+        font-weight: 500;
+        font-size: 16px;
+        background-color: rgba(0,0,0,.05);/*gainsboro;*/
+        /*background-image: linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));*/
+    }
+    .div-footer {
+        margin: 15px;
+    }
+
+    .color-back {
+        color: #932cc9; 
+    }
+    .option-off {
+        opacity: 0.5;
+    }
+    .op-button {
+        /*border-radius: 5px*/
+        /*background-color:#EEE;*/
+
+        font-family: inherit;
+        font-size: 100%;
+        padding: .5em 1em;
+        color: #444;
+        color: rgba(0,0,0,.8);
+        border: 1px solid #999;
+        border: transparent;
+        background-color: #E6E6E6;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        zoom: 1;
+        white-space: nowrap;
+        vertical-align: middle;
+        text-align: center;
+        cursor: pointer;
+    }
+    
+/* checkbox */
+.checkbox input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    margin: 10px 0 0 20px;
+}
+.checkbox__text {
+    position: relative;
+    padding: 0 0 0 60px;
+    cursor: pointer;
+}
+.checkbox__text:before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 50px;
+    height: 26px;
+    border-radius: 13px;
+    background: #CDD1DA;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+    transition: .2s;
+}
+.checkbox__text:after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 0 2px 5px rgba(0,0,0,.3);
+    transition: .2s;
+}
+.checkbox input:checked + .checkbox__text:before {
+    background: #932cc9;
+}
+.checkbox input:checked + .checkbox__text:after {
+    left: 26px;
+}
+.checkbox input:focus + .checkbox__text:before {
+    /*box-shadow: inset 0 2px 3px rgba(0,0,0,.2), 0 0 0 3px rgba(255,255,0,.7);*/
+}
+/* end checkbox */

@@ -1,0 +1,140 @@
+<% include ./header.ejs %>
+
+  <style>
+    
+
+.navigation ul {
+  font: bold 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+}
+.navigation li {
+  display: inline-block;
+}
+.navigation a {
+  background: #395870;
+  background: linear-gradient(#49708f, #293f50);
+  border-right: 1px solid rgba(0, 0, 0, .3);
+  color: #fff;
+  padding: 12px 20px;
+  text-decoration: none;
+}
+.navigation a:hover {
+  background: #314b60;
+  box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, .3);
+}
+.navigation li:first-child a {
+  border-radius: 4px 0 0 4px;
+}
+.navigation li:last-child a {
+  border-right: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+
+
+
+
+  </style>
+
+  <body>
+
+<% include ./menu.ejs %>
+<!--     <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pure-menu pure-menu-horizontal custom-menu-3 custom-can-transform">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Yahoo</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">W3C</a></li>
+            </ul>
+        </div>
+    </div> -->
+ 
+    <div id="app">
+      <div class="content">
+
+<!--       <div class="log-message" style="display:none;">
+        <div class="pure-g log-content">
+          <div class="pure-u-1 l-box">
+            <p class="log-heading">...</p>
+          </div>
+        </div>
+      </div> -->
+
+        <div id="rs">
+<!--           <nav class="navigation">
+            <ul>
+              <li><a href="#">Profile</a></li>
+              <li><a href="#">Settings</a></li>
+              <li><a href="#">Notifications</a></li>
+              <li><a href="#">Logout</a></li>
+            </ul>
+          </nav>
+ -->          <% if (item.length) { %>
+          <div class="pure-g">
+            <div class="pure-u-1-1">
+              <ul class="zebra">
+                <% item.forEach(function(item){ %>
+                  <% if (item.Pos == 5) { %>
+                    <li class="d-flex active_li">
+                    <% } else { %>
+                    <li class="d-flex">
+                    <% } %>
+                  <div class="shrink">
+                    <span class="colorgray"><%=item.Pos%></span>
+                  </div>
+                   <div class=" grow"> <span>
+                    <% if (item.Artist) { %>
+                    <%=item.Artist%> - %>
+                    <% } %>
+                    <% if (item.Album) { %>
+                    <%=item.Album%> - %>
+                    <% } %>
+                      <%= item.Title %></span>
+                   </div>
+                  <div class="colorgray">
+                    <span><%= item.Time%></span>
+                  </div>
+                </li>
+                
+          
+            <% }) %>
+              </ul>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+
+        <div class="pure-g blank-radio">
+          <div class="pure-u-1-4 l-box">
+            <div class="station-logo">
+              <img class="pure-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+            </div>
+          </div>
+          <div class="pure-u-3-4 l-box">
+          </div>
+        </div>
+      </div>
+      <div class="player">
+        <div class="pure-g player-content">
+          <div class="pure-u-1-4 l-box">
+            <div class="station-logo">
+              <img class="pure-img" id="station_logo" src="" alt="item.station">
+              <!-- <img class="pure-img play-button" id="PlayerButton" src="img/pause.svg"> -->
+            </div>
+          </div>
+          <div class="pure-u-3-4 r-box station-text">
+            <div class="station-text-inside">
+              <p class="station-heading" id="station">{{ station name }}</p>
+              <p id="song">{{ song }}</p>
+              <p class="station-heading" id="elapsed">{elapsed}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<% include ./footer.ejs %>
+  </body>
+</html>
