@@ -7,8 +7,6 @@ var fs = require('fs');
 var fileclient = require('./fileclient.js')
 var path = require('path');
 
-
-
 // Private
 var mpdClient = null;
 var mpdOptions = null;
