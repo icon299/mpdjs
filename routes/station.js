@@ -131,8 +131,14 @@ router.get('/mb', function (req,res){
 
 router.get('/albums', (req, res) => {
   mpdClient.getAlbums(function(err, item){
-    console.log(item)
+    // console.log(item)
    res.render('albums', {item});
+  });
+})
+router.get('/artists', (req, res) => {
+  mpdClient.getArtists(function(err, item){
+    // console.log(item)
+   res.render('artists', {item});
   });
 })
 

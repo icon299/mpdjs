@@ -499,79 +499,64 @@ function removeFromQueue(id, callback) {
 }
 
 
-function listAlbumArtist(albumName, callback) {
-  if (albumName.Album !== '') {
-    var mc = "list artist album" + ' "' + albumName.Album + '"';
-
-    sendCommands(cmd(mc, []), function(err, msg) {
-        if(err) {
-            callback(err);
-        } else {
-            var artistName = mpd.parseKeyValueMessage(msg);
-            var obj = Object.assign(albumName, artistName)
-            callback(null, obj);
-        }
-    })
-  }
+function getAlbumsForArtist (artist, callback){
+  var obj = {}
+  var albumArtist = []
+  sendCommands(cmd("list album artist " + '"' + artist.Artist +'"', []), function(err,msg){
+    if (err) {
+      callback(err)
+    } else {
+      var artistAlbums = mpd.parseArrayMessage(msg)
+      for (var i = artistAlbums.length - 1; i >= 0; i--) {
+        obj = Object.assign(artistAlbums[i],artist)
+        albumArtist.push(obj)
+      }
+      callback(null, albumArtist)
+    }
+  })
 }
 
-function mpdGetAlbums(callback) {
+function mpdGetArtistsAlbums (callback) {
 
-    sendCommands(cmd("list album", []), function(err, msg) {
+var albumArtistArr = []
 
-        if(err) {
-            callback(err);
-        } else {
-            var albumList = mpd.parseArrayMessage(msg);
-
-            albumList.sort(function(a, b){
+sendCommands(cmd("list artist", []), function(err, msg) {
+    if (err) {
+      callback(err)
+    } else {
+      var artistsList = mpd.parseArrayMessage(msg)
+      artistsList.forEach(function(item, index, array) {
+        getAlbumsForArtist(item, function(err, data){
+          for (var i = data.length - 1; i >= 0; i--) {
+            albumArtistArr.push(data[i])
+          }
+          if (index == array.length -1) {
+            albumArtistArr.sort(function(a, b){
               if (a.Album > b.Album) {
                 return 1;
               }
               if (a.Album < b.Album) {
                 return -1;
               }
-              // a должно быть равным b
               return 0;
             });
-            var a = [];
-            albumList.forEach(function (item,index,array){
-              if (item.Album !== '') {
-                console.log('item', item)
-                listAlbumArtist(item, function(err, obj){
-                    a.push(obj)
-                    if (index===array.length-1) {
-                      // a.sort(function(f, s){
-                      //   if (f.Artist > s.Artist) {
-                      //     return 1;
-                      //    }
-                      //   if (f.Artist < s.Artist) {
-                      //     return -1;
-                      //   }
-                      //   // a должно быть равным b
-                      //   return 0;
-                      // });
-                      callback(null, a);
-                    }
-                })
-              }
-            })
-        }
-    })
+            callback(null, albumArtistArr)
+          }
+        })
+      })
+    }
+  })
 }
 
-function mpdGetArtists(quryString, callback) {
-
-    sendCommands(cmd("list artist", []), function(err, msg) {
-            if(err) {
-                callback(err);
-            } else {
-                var msg = mpd.parseArrayMessage(msg);
-                msg = JSON.stringify(msg);
-                // console.log(msg)
-                callback(null, msg)
-            }
-        });
+function mpdGetArtists(callback) {
+  sendCommands(cmd("list artist", []), function(err, msg) {
+    if(err) {
+      callback(err);
+    } else {
+      var artistsArray = mpd.parseArrayMessage(msg);
+        callback(null, artistsArray)
+    }
+  });
 }
 
 function mpdShuffle(callback) {
@@ -810,7 +795,12 @@ var self = module.exports = {
         doRescanDB(callback)
     },
     getAlbums: function getAlbums(callback) {
-        mpdGetAlbums(callback)
+      debug('Get Albums by Artists')
+        mpdGetArtistsAlbums(callback)
+    },
+    getArtists: function getAlbums(callback) {
+      debug('Get Artists')
+        mpdGetArtists(callback)
     },
     getMpdStats: function getMpdStats(callback) {
         sendStatsRequest(callback)
