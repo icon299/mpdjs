@@ -3,6 +3,7 @@
 var socket = null;
 const DefaultSongText = ' *** ';
 const DefaultMpdErrorText = 'Trying to reconnect...';
+const ErrorWssConnectText = 'Can\'t reach server - trying to reconnect...'
 //const DefaulLogoImage ='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 const DefaultLogoImage = "/img/playlist.png"
 var lastMpdReconnectAttempt = 0;
@@ -30,6 +31,13 @@ setDOMelementSrc = function(element, src) {
         el.src = src;
     }
 }
+setDOMelementStyle = function(element, style) {
+    var el = document.getElementById(element);
+    if(typeof(el) != 'undefined' && el != null) {
+        el.style = style;
+    }
+}
+
 
 convertTime = function(timeInSec) {
     var hours = Math.floor(timeInSec / 3600);
@@ -81,58 +89,57 @@ function app() {
 
         socket.onopen = function () {
                 data.errorState.wssDisconnect = false;
-                //sendWSSMessage('REQUEST_DB_STATION_LIST', null);
+                hideError()
+                sendWSSMessage('REQUEST_DB_STATION_LIST', null);
                 // console.log('SOCKET OPEN AND req DB list')
-                sendWSSMessage('REQUEST_STATUS', null);
+                //sendWSSMessage('REQUEST_STATUS', null);
         };
         socket.onerror = function(err) {
             data.errorState.wssDisconnect = true;
+            showError(ErrorWssConnectText);
             console.log(err);
         }
 
         socket.onclose = function(err) {
             data.errorState.wssDisconnect = true;
+            //showError(ErrorWssConnectText);
         };
 
         socket.onmessage = function (message) {
             data.errorState.wssDisconnect = false;
+            hideError()
             var msg = JSON.parse(message.data);
             switch(msg.type) {
                 case "PLAYLISTSONGS":
-                    //showStantionList(msg.data);
                     break;
                 case "PLAYLISTS":
-                    //showStantionList(msg.data);
                     break;
                 case "DB_STATION_LIST":
                     data.stationList = msg.data;
-                    //makeList(data.stationList);
-                    //renderStationList(msg.data);
                     sendWSSMessage('REQUEST_STATUS', null);
                     break;
                 case "STATION_LIST":
                     data.stationList = msg.data;
-                    //makeList(data.stationList);
                     sendWSSMessage('REQUEST_STATUS', null);
                     break;
                 case "STATUS":
-                // console.log("STATUS req: ", msg.data)
+                 // console.log("STATUS req: ", msg.data)
+                    hideError()
+                    setMpdOptions(msg.data)
                     timer.lastDisplayTimestamp = 0;
                     currrentSongId = msg.data.songid;
                     setPlayState(msg.data.state);
                     setCurrentStation(msg.data);
                     setSongName(msg.data.title, msg.data.album, msg.data.artist,msg.data.file);
                     setElapsedTime(msg.data.elapsed);
-                    setMpdOptions(msg.data);
                     break;
                 case "ELAPSED":
                     setElapsedTime(msg.data.elapsed);
                     break;
-                case "ERROR_READ_FILE":
+                case "ERROR":
                     showError(msg.data);
                     break;
                 case "UPDATE_DB":
-                    //console.log('UPDATE_DB', msg.data)
                     document.getElementById('db_update').innerHTML = 'updating_db: ' + msg.data;
                     sendWSSMessage('REQUEST_STATS', null);
                     break;
@@ -146,21 +153,17 @@ function app() {
                     setQueueList(msg.data)
                     break;
                 case "MPD_OFFLINE":
+                    console.log('server can\'t reach MPD - trying to reconnect...')
                     showError('server can\'t reach MPD - trying to reconnect...')
                     setDefaultStatus();
-                    // data.status = 'loading';
-                    // data.currentStation = null;
-                    // currrentSongId = null;
-                    // data.elapsed = '0:00';
-                    // data.song = DefaultMpdErrorText;
                     data.errorState.mpdServerDisconnect = true;
                     setTimeout(function(){
                         if((Date.now()-lastMpdReconnectAttempt) >= 2500) {
-                             lastMpdReconnectAttempt = Date.now();
-                             sendWSSMessage('REQUEST_STATUS', null);
-                         }
+                            lastMpdReconnectAttempt = Date.now();
+                            sendWSSMessage('REQUEST_STATUS', null);
                         }
-                        , 3000);
+                    }
+                    , 3000);
                     return;
             }
             data.errorState.mpdServerDisconnect = false;
@@ -260,7 +263,10 @@ function app() {
 
     updateDB = function() {
         sendWSSMessage('REQUEST_UPDATE_DB')
-    };    
+    };
+    rescanDB = function() {
+        sendWSSMessage('REQUEST_RESCAN_DB')
+    };
 
     updateElapsed = function() {
         var self = this;
@@ -316,10 +322,10 @@ function app() {
 
     setPlayState = function(state) {
         var playicon =0;
-        var el = document.getElementById("playStatus") 
+        var el = document.getElementById("playStatus")
             if(typeof(el) != 'undefined' && el != null)
                 var playicon = 1
-        
+
         switch(state) {
             case 'play':
                 data.status = 'playing';
@@ -344,11 +350,10 @@ function app() {
 
     toggleMpdOptions = function(option) {
         sendWSSMessage("TOGGLE_OPTION", option)
-        //setMpdOptions(option);
     };
 
     setMpdOptions = function(data) {
-        
+
         keys = Object.keys(data);
         keys.forEach(function(item){
             if (item == 'repeat' || item == 'random' || item == 'single' || item == 'consume') {
@@ -359,9 +364,9 @@ function app() {
                         } else {
                             el.classList.add('option-off');
                         }
-                    }        
+                    }
                 }
-            } 
+            }
         )
     }
 
@@ -370,24 +375,12 @@ function app() {
         var found = false;
         if(!isNaN(msg.time))
         setDOMelementInnerHtml('duration', ' ('+ convertTime(msg.time)+')')
-
+        setQueueCurrentSong(msg.id);
         data.stationList.forEach(function(stationData) {
             if(stationData.stream === msg.file) {
                 found = true;
                 setDOMelementSrc('station_logo', stationData.logo)
-                // var el = document.getElementById('station_logo');
-                //     if(typeof(el) != 'undefined' && el != null) {
-                //         el.src = stationData.logo;
-                //     }
                 setDOMelementInnerHtml('station', stationData.station)
-                // var el = document.getElementById('station');
-                //     if(typeof(el) != 'undefined' && el != null) {
-                //         el.innerHTML = stationData.station
-                //     }
-//                document.getElementById('station_logo').src = stationData.logo;
-//                document.getElementById('station').innerHTML = stationData.station;
-                // Don't do anything if the station did not chnage
-
                 if(!data.currentStation || data.currentStation.stream !== msg.file)
                     data.currentStation = stationData;
                 return;
@@ -407,20 +400,24 @@ function app() {
         document.getElementById('station_logo').addEventListener('click', function (event) {
             onPlayButton();
         });
-        setQueueCurrentSong(msg.id);
+
     };
 
     setQueueCurrentSong = function(id) {
+        //console.log('prev queue ID:', prevQuenue)
         var el = document.getElementById('quenue_'+ prevQuenue);
         if(typeof(el) != 'undefined' && el != null) {
             el.classList.remove('active_li')
         }
-        
+
         var el = document.getElementById('quenue_'+ id);
         if(typeof(el) != 'undefined' && el != null) {
-            prevQuenue = id
+            if (prevQuenue !== id)
+                prevQuenue = id
             el.classList.add('active_li')
         }
+        //        console.log('queue ID:', id)
+
     }
 
     setSongName = function(title, album, artist, file) {
@@ -439,36 +436,14 @@ function app() {
             }
             this.song = text;
         }
-        document.getElementById('song').innerHTML = this.song;
+        setDOMelementInnerHtml('song', this.song)
+        // document.getElementById('song').innerHTML = this.song;
     };
 
     changeDisplayTimer = function(ms) {
         var timeInSec = ms/1000;
-        
-//        var hours = Math.floor(timeInSec / 3600);
-//        var minutes = Math.floor((timeInSec / 60) - (hours * 60));
-//        var seconds = Math.floor(timeInSec - (hours * 3600) - (minutes * 60));
-//        var strToDisplay = (hours > 0) ? (hours+':') : '';
-//        strToDisplay += (hours > 0 && minutes < 10) ? ('0' + minutes + ':') : (minutes + ':');
-//        strToDisplay += (seconds < 10 ? '0' : '') + seconds;
-        this.elapsed = convertTime(timeInSec)//strToDisplay;
-        document.getElementById("elapsed").innerHTML = this.elapsed;
-    };
-
-
-
-    sendWSSMessage = function(type, data) {
-        var self = this;
-        var msg = {
-            type: type,
-            data: (data) ? data : {}
-        }
-        try {
-            socket.send(JSON.stringify(msg));
-        } catch (error) {
-            //data.errorState.wssDisconnect = true;
-            //showError('Can\'t connect to server...');
-        }
+        elapsed = convertTime(timeInSec)//strToDisplay;
+        setDOMelementInnerHtml('elapsed', elapsed)
     };
 
     cutString = function (data,maxlen){
@@ -476,29 +451,15 @@ function app() {
     };
 
     showError = function(msg) {
-        if(document.getElementById("error-container")) {
-            // var errorHeading =document.getElementById("eh")
-            // errorHeading.innerHTML += msg;
-        } else {
-            var errorNode = document.getElementById("app");
-                var errorContainer = document.createElement('div');
-                errorContainer.className = "error-message";
-                errorContainer.id = "error-container";
-            errorNode.appendChild(errorContainer);
-            var errorContent = document.createElement('div');
-                errorContent.className = "pure-g error-content";
-            errorContainer.appendChild(errorContent);
-            var errorBox =  document.createElement('div');
-                errorBox.className = "pure-u-1 l-box";
-            errorContent.appendChild(errorBox);
-            var errorHeading = document.createElement('p');
-                errorHeading.className = "error-heading";
-                errorHeading.id = "eh";
-            errorBox.appendChild(errorHeading);
-
-            errorHeading.innerHTML = msg;
-        }
+        setDOMelementInnerHtml('err-msg', msg)
+        setDOMelementStyle('error-message', 'display :inline')
     };
+
+    hideError = function(){
+        setDOMelementStyle('error-message', 'display :none')
+        //var el = document.getElementById('error-message');
+        //el.style = 'display :none';
+    }
 
     showLog = function(msg) {
 
@@ -522,26 +483,31 @@ function app() {
         var el = document.getElementById('ul_queue');
         if(typeof(el) != 'undefined' && el != null) {
             var html = ''
-            if (queue.length) {
+            if (queue.length > 1) {
+                html = '<li class="title">Playlist</li>'
                 queue.forEach(function(item){
                 var artist = item.artist
-                    html += 
-                    '<li class="d-flex" id="quenue_' + item.id + '"' + 'onclick='+'sendPlayId("'+item.id+ '")' + '>' 
-                    + '<div class="grow">'
-                    if (item.artist) 
+                    html +=
+                    '<li id="quenue_' + item.id + '"' + 'onclick='+'sendPlayId("'+item.id+ '")' + '>'
+                    + '<div><span class="name">'
+                    if (item.title)
+                        html += item.title
+                    else
+                    html += item.file
+
+                    html += '</span>'
+                    html += '<span class="comment">'
+                    if (item.artist)
                     html += item.artist + ' - '
                     if (item.album)
                     html += item.album + ' - '
-                    if (item.title)
-                    html += item.title 
-                    else
-                    html += item.file 
+                    html += '</span>'
+                    // html += '<span class="arrow" onclick="onRemoveFromQueue(' + item.id + ')">'
+                    // html += '<!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->'
+                    // html += '</span>'
                     html += '</div>'
-                    html += '<div class="shrink" onclick="onRemoveFromQueue(' + item.id + ')">' 
-                    html += '<img src="img/remove.png" alt="" style="width: 15px;"></div>' 
-                     
-                    html += '</li>' 
-                }) 
+                    html += '</li>'
+                })
             }
             el.innerHTML = '';
             el.innerHTML = html
@@ -550,8 +516,22 @@ function app() {
     };
 
     sendPlayId = function (id) {
-        sendWSSMessage('PLAY_ID', id)   
+        sendWSSMessage('PLAY_ID', id)
     }
+
+    sendWSSMessage = function(type, data) {
+        var self = this;
+        var msg = {
+            type: type,
+            data: (data) ? data : {}
+        }
+        try {
+            socket.send(JSON.stringify(msg));
+        } catch (error) {
+            data.errorState.wssDisconnect = true;
+            //showError('Can\'t connect to server...');
+        }
+    };
 }
 
 var mpdfm = new app();

@@ -1,0 +1,62 @@
+<% include ./header.ejs %>
+
+<body>
+  <div id="topbar">
+    <div id="leftnav">
+      <a href="/">
+        <img src="img/home.png" alt="Home">
+      </a>
+    </div>
+<!--         <div id="rightnav">
+            <a href="/menu">Menu</a>
+        </div> -->
+    <div id="title">Menu</div>
+  </div>
+
+<% include ./error-log-msg.ejs %>
+
+  <div class="list">
+    <div id="content">
+      <ul id="ul_queue">
+        <li>
+          <div onclick="getPage('/radio')">
+            <span class="name">Radio</span>
+            <span class="arrow"></span>
+          </div>
+        </li>
+        <li>
+          <div onclick="getPage('/albums')">
+            <span class="name">Albums</span>
+            <span class="arrow"></span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="name">Artists</span>
+            <span class="arrow"></span>
+          </div>
+        </li>
+        <li>
+          <div onclick="getPage('/mb')">
+            <span class="name">Folders</span>
+            <span class="arrow"></span>
+          </div>
+        </li>
+        <li>
+          <div onclick="getPage('/stats')">
+            <span class="name">Stats</span>
+            <span class="arrow"></span>
+          </div>
+        </li>
+        <li class="withimage hide " style="border:none">
+          <img  src="/img/wdot.png">
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <% include ./player.ejs %>
+  <% include ./footer.ejs %>
+
+</body>
+</html>

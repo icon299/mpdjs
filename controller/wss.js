@@ -71,14 +71,14 @@ module.exports = {
                     case "REQUEST_DB_STATION_LIST":
                         db.connect(function(err, count){
                             if(err) {
-                                sendWSSMessage(ws, 'ERROR_READ_FILE', err);
+                                sendWSSMessage(ws, 'ERROR', err);
                                 console.error('Can\'t read station db:');
                             }
                         });
 
                         db.selectall(function (err, msg) {
                             if(err) {
-                                sendWSSMessage(ws, 'ERROR_READ_FILE', err);
+                                sendWSSMessage(ws, 'ERROR', err);
                                 console.error('Can\'t read station db:');
                             } else{
 
@@ -91,7 +91,7 @@ module.exports = {
                         fs.readFile(stationFile, 'utf8', function (err, data) {
                             if (err) {
                                 console.error('Can\'t read station file: "' + stationFile + '": ' + err);
-                                sendWSSMessage(ws, 'ERROR_READ_FILE', 'Can\'t read station file');
+                                sendWSSMessage(ws, 'ERROR', 'Can\'t read station file');
                                 return;
                             }
                             try {
@@ -99,13 +99,14 @@ module.exports = {
                                 sendWSSMessage(ws, 'STATION_LIST', stationList);
                             } catch (error) {
                                 console.error('Can\'t interpret station file: "' + stationFile + '": ' + error);
-                                sendWSSMessage(ws, 'ERROR_READ_FILE', 'Can\'t parse station file');
+                                sendWSSMessage(ws, 'ERROR', 'Can\'t parse station file');
                             }
                         });
                         break;
                     case "REQUEST_STATUS":
                         mpdClient.getMpdStatus(function(err, status) {
                             if(err) {
+                                debug('MPD_OFFLINE');
                                 sendWSSMessage(ws, 'MPD_OFFLINE', null);
                             } else {
                                 sendWSSMessage(ws, 'STATUS', status);
@@ -202,7 +203,7 @@ module.exports = {
                         console.log("FILE_UPLOAD: " + msg.data);
                         fileup.download_logo( msg.data, function(err, msg) {
                             if (err) {
-                                sendWSSMessage(ws, 'UPLOAD_ERROR', err);
+                                sendWSSMessage(ws, 'ERROR', err);
                                 console.log("UPLOAD ERROR: " + err);
                             } else {
                             sendWSSMessage(ws, 'UPLOAD_OK', msg);
@@ -211,7 +212,6 @@ module.exports = {
                         });
                         break;
                     case "SAVE_JSON":
-                        console.log('json save event');
                         fileup.savefileJSON(msg.data, function(err, ret){
                             if (err) {
                                 console.log(err);
@@ -221,7 +221,6 @@ module.exports = {
                         })
                         break;
                     case "ALBUMART":
-                        console.log('ALBUMART');
                         mpdClient.albumArt(msg.data, function(err, data){
                             if (err) {
                                 console.log('Error say: ' + err);
@@ -230,14 +229,11 @@ module.exports = {
                         })
                         break;
                     case "ADDTOQUENUE":
-                        console.log("ADDTOUENUE Event")
-                        console.log(msg.data)
                         mpdClient.playDir(msg.data.url, function(err){
                             if(err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');
                             }
                         })
-
                         break;
                     case "NEXT":
                         mpdClient.nextsong(function(err){
@@ -269,11 +265,47 @@ module.exports = {
                             }                            
                         })
                         break;
+                    case "SHUFFLE":
+                        mpdClient.doShuffle(function(err){
+                          if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            }  
+                        })
+                        break;
+                    case "GET_ALBUMS":
+                        mpdClient.getAlbums(msg.data, function(err, items){
+                          if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws,"ALBUMS", items)
+                            }
+                        })
+                        break;
+                    case "GET_ARTISTS":
+                        mpdClient.getArtists(msg.data, function(err, items){
+                          if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws,"ARTISTS", items)
+                            }
+                        })
+                        break;                    
                     case "REQUEST_UPDATE_DB":
-                        console.log('wss: REQUEST_UPDATE_DB')
                         mpdClient.updateDB(function(err, msg){
-                            console.log('wss: send_UPDATE_DB')
-                            sendWSSMessage(ws,'UPDATE_DB', msg)
+                          if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws,'UPDATE_DB', msg)
+                            }
+                        })
+                        break;
+                    case "REQUEST_RESCAN_DB":
+                        mpdClient.rescanDB(function(err, msg){
+                          if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws,'RESCAN_DB', msg)
+                            }
                         })
                         break;
                     case "TOGGLE_OPTION":
@@ -286,20 +318,29 @@ module.exports = {
                                 sendWSSMessage(ws,'MPD_OPTION', msg.data)
                             }
                         })
-                        // mpdClient.getOptions(msg.data, function(err, option){
-                        //     console.log('wss', option)
-                        //     sendWSSMessage(ws,'MPD_OPTION', msg.data)
-                        // })
+                    break;
 
                 }
             });
         });
         mpdClient.onStatusChange(function(status) {
            broadcastMessage(wss, 'STATUS', status);
-
         });
         mpdClient.onQueueChange(function(queue) {
+            debug("Broadcast QUENUE")
             broadcastMessage(wss, 'QUEUE', queue);
+        });
+        mpdClient.onOptionChange(function(data) {
+            debug('Broadcast Option change', data)
+            broadcastMessage(wss, 'MPD_OPTION', data);
+        });
+        mpdClient.onDatabaseChange(function(data) {
+            debug('Broadcast Database event', data)
+            broadcastMessage(wss, 'MPD_DATABASE', data);
+        });
+        mpdClient.onDatabaseUpdate(function(data) {
+            debug('Broadcast Database UPDATE event', data)
+            broadcastMessage(wss, 'MPD_DATABASE_UPDATE', data);
         });
 
         // mpdClient.onUpdateDB(function(stats) {

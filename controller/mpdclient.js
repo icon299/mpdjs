@@ -16,6 +16,9 @@ var Status = Object.freeze({"disconnected":1, "connecting":2, "reconnecting":3, 
 var mpdStatus = Status.disconnected;
 var broadcastStatus = [];
 var broadcastQuenue = [];
+var broadcastOption = [];
+var broadcastDatabase = [];
+var broadcastDbUpdate = [];
 var mpdUpdateDB = 0;
 var mpdMusicBase = '';
 var mpdStatusOptions = {"repeat":0,"random":0,"single":0,"consume":0};
@@ -33,39 +36,66 @@ function connect() {
     mpdClient = mpd.connect(mpdOptions);
     // fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
     //     console.log(data)
-    // })    
+    // })
 
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
         mpdClient.on('system', function(name) {
-            debug('System update received: ' + name);
-            if(name === "player" || name === "options") {
-            // if(name === "playlist" || name === "player" || name === "options") {
-                sendStatusRequest(function(error, status) {
-                    if(!error) {
-                        broadcastStatus.forEach(function(callback) {
-                            debug('STATUS', status)
-                            callback(status);
-                        });
-                    }
-                });
+            debug('System event received: ' + name);
+            switch(name) {
+                case "player":
+                    sendStatusRequest(function(error, status) {
+                        if(!error) {
+                            broadcastStatus.forEach(function(callback) {
+                                callback(status);
+                            });
+                        }
+                    });
+                    break;
+                case "playlist":
+                    getQuenue(function(error, queue) {
+                        if(!error) {
+                            broadcastQuenue.forEach(function(callback) {
+                                callback(queue);
+                            });
+                        }
+                    });
+                    break;
+                case "options":
+                    sendStatusRequest(function(error, status) {
+                        if(!error) {
+                            broadcastOption.forEach(function(callback) {
+                                callback(status);
+                            });
+                        }
+                    });
+                    break;
+                case "database":
+                    sendStatsRequest(function(error, data) {
+                        if(!error) {
+                            broadcastDatabase.forEach(function(callback) {
+                                callback(data);
+                            });
+                        }
+                    });
+                    break;
+                case "update":
+                    sendUpdateIDRequest(function(error, job_id) {
+                        if(!error) {
+                            broadcastDbUpdate.forEach(function(callback) {
+                                callback(job_id);
+                            });
+                        }
+                    });
+                    break;
             }
-            if(name === "playlist") {
-                getQuenue(function(error, queue) {
-                    if(!error) {
-                        broadcastQuenue.forEach(function(callback) {
-                            debug('QUEUE_playlist', queue)
-                            callback(queue);
-                        });
-                    }
-                });
-            }
-        
+
+
 
             // if(name === "update") {
             //     if (mpdUpdateDB) { // выполнить после updateDB
-            //         mpdUpdateDB = 0; // сбросим флаг 
+            //         mpdUpdateDB = 0; // сбросим флаг
 
             //     } else { // поступила команда update music database
             //         mpdUpdateDB = 1;
@@ -75,7 +105,7 @@ function connect() {
             //                     callback(updateDB);
             //                 });
             //             }
-            //         });    
+            //         });
             //     }
             // }
         });
@@ -97,12 +127,12 @@ function retryConnect() {
         return;
     mpdClient = null;
     mpdStatus = Status.reconnecting;
-    // setTimeout(() => {
-    //     connect();
-    // }, 3000);
-    setTimeout(function(){
+    setTimeout(() => {
         connect();
-    }, 3000)
+    }, 3000);
+    // setTimeout(function(){
+    //     connect();
+    // }, 3000)
 }
 
 function sendCommands(commands, callback) {
@@ -129,7 +159,6 @@ function sendCommands(commands, callback) {
 }
 
 function sendStatusRequest(callback) {
-    debug('sendStatusRequest')
     sendCommands([cmd("status", []), cmd("currentsong", []) ],
         function(err, msg) {
             if (err) {
@@ -141,14 +170,13 @@ function sendStatusRequest(callback) {
                 mpdStatusOptions.random = status.random;
                 mpdStatusOptions.single = status.single;
                 mpdStatusOptions.consume = status.consume;
-                console.log("mpdOptions_st: ", mpdStatusOptions)
+                //console.log("mpdOptions_st: ", mpdStatusOptions)
                 callback(null, status);
             }
     });
 }
 
 function sendStatsRequest(callback){
-    debug('sendStatsRequest')
     sendCommands(cmd("stats",[]), function (err,msg){
         if (err) {
             callback(err);
@@ -159,7 +187,7 @@ function sendStatsRequest(callback){
                             // { day: 'numeric', year: 'numeric', month: 'numeric', pattern: "{day}:{month}:{year}", pattern12: "{hour}:{minute}:{second} {ampm}" };
             stats.db_update = new Date(stats.db_update*1000).toLocaleString("ru-RU", options)
             stats.uptime = convertTime(stats.uptime)
-            
+
             stats.playtime = convertTime(stats.playtime);
             callback(null, stats);
             debug('STATS: ', stats)
@@ -167,7 +195,7 @@ function sendStatsRequest(callback){
     });
 }
 
-function sendOnlyStatusRequest(callback) {
+function sendUpdateIDRequest(callback) {
     sendCommands(cmd("status",[]), function (err,msg){
         if (err) {
             callback(err);
@@ -178,6 +206,7 @@ function sendOnlyStatusRequest(callback) {
             for(var i = 0; i < keys.length;i++){
                 if(keys[i].toLowerCase() === 'updating_db') {
                     updateDB = data[keys[i]]//value;
+                    debug("****", updateDB)
                     break;
                 }
             }
@@ -233,7 +262,7 @@ function toggleMpdOptions(option, callback) {
     if (currentValue == 0) {
         arg = [1]
     }
-    console.log('option:', option, 'Value:', arg)
+    //console.log('option:', option, 'Value:', arg)
     sendCommands(cmd(option, arg),
         function(err, msg) {
             if (err) {
@@ -241,7 +270,7 @@ function toggleMpdOptions(option, callback) {
             } else {
                 callback(null, arg[0]);
             }
-    });    
+    });
 }
 
 function getMpdOptions(option, callback) {
@@ -308,34 +337,22 @@ function sendElapsedRequest(callback) {
     });
 }
 
-function getAlbumart(url, callback){
+// function getAlbumart(url, callback){
 
-    sendCommands(cmd("listall", ['music/usbmount/usb0/']),
-        function(err, msg) {
-            if(err) {
+//     sendCommands(cmd("listall", ['music/usbmount/usb0/']),
+//         function(err, msg) {
+//             if(err) {
 
-                callback(err);
-            } else {
+//                 callback(err);
+//             } else {
 
-                var albumart = mpd.parseArrayMessage(msg);
-                callback(null, JSON.stringify(albumart));
-            }
-        });
-};
+//                 var albumart = mpd.parseArrayMessage(msg);
+//                 callback(null, JSON.stringify(albumart));
+//             }
+//         });
+// };
 
-function getQuenue(callback) {
 
-    sendCommands([cmd("playlistinfo",[])],
-        function(err, msg) {
-            if (err) {
-                callback(err);
-            } else {
-                var queue = parseQuenueMessage(msg);
-                //console.log('queue: ', queue)
-                callback(null,queue);
-            }    
-        });
-};
 
 function getDir(url, param , callback){
 debug('url = ',url)
@@ -359,17 +376,17 @@ debug('url = ',url)
         });
 };
 
-function getAlbum (callback) {
-    sendCommands(cmd("list album", []), function(err, msg) {
-            if(err) {
-                callback(err);
-            } else {
-                var item = mpd.parseArrayMessage(msg);
-                debug('album item: ', item)
-                callback(null, item)
-            }
-        });
-}
+// function getAlbum (callback) {
+//     sendCommands(cmd("list album", []), function(err, msg) {
+//             if(err) {
+//                 callback(err);
+//             } else {
+//                 var item = mpd.parseArrayMessage(msg);
+//                 debug('album item: ', item)
+//                 callback(null, item)
+//             }
+//         });
+// }
 
 function getArtist (callback) {
     sendCommands(cmd("urlhandlers", []), function(err, msg) {
@@ -386,7 +403,7 @@ function testCommandMPD(command, param, callback) {
     if (param != '')
         var arg = [param];
     else var arg = [];
-     
+
     sendCommands(cmd(command, arg), function(err, msg) {
             if(err) {
                 callback(err);
@@ -396,7 +413,7 @@ function testCommandMPD(command, param, callback) {
                 // console.log(msg)
                 callback(null, msg)
             }
-        });   
+        });
 }
 
 function addToQuenue(url, callback) {
@@ -447,7 +464,7 @@ function playSongId(id, callback) {
     }
 }
 
-function updateDB(callback){
+function doUpdateDB(callback){
     debug('UpdateDB')
     sendCommands(cmd("update",[]),function(err, msg) {
         if(err) {
@@ -459,21 +476,95 @@ function updateDB(callback){
     });
 }
 
+function doRescanDB(callback){
+    debug('RescanDB')
+    sendCommands(cmd("rescan",[]),function(err, msg) {
+        if(err) {
+            callback(err);
+        } else {
+            console.log('rescanDB:', msg)
+            callback(null, msg)
+        }
+    });
+}
+
 function removeFromQueue(id, callback) {
-    if (id != '') 
-        var arg = [id];    
+    if (id != '')
+        var arg = [id];
     sendCommands(cmd("deleteid", arg), function (err){
         if(err) {
             callback(err);
         } else {
             callback(null)
-        }        
+        }
     });
 }
 
-function getLibrary(quryString, callback) {
-    
+
+function listAlbumArtist(albumName, callback) {
+  if (albumName.Album !== '') {
+    var mc = "list artist album" + ' "' + albumName.Album + '"';
+
+    sendCommands(cmd(mc, []), function(err, msg) {
+        if(err) {
+            callback(err);
+        } else {
+            var artistName = mpd.parseKeyValueMessage(msg);
+            var obj = Object.assign(albumName, artistName)
+            callback(null, obj);
+        }
+    })
+  }
+}
+
+function mpdGetAlbums(callback) {
+
     sendCommands(cmd("list album", []), function(err, msg) {
+
+        if(err) {
+            callback(err);
+        } else {
+            var albumList = mpd.parseArrayMessage(msg);
+
+            albumList.sort(function(a, b){
+              if (a.Album > b.Album) {
+                return 1;
+              }
+              if (a.Album < b.Album) {
+                return -1;
+              }
+              // a должно быть равным b
+              return 0;
+            });
+            var a = [];
+            albumList.forEach(function (item,index,array){
+              if (item.Album !== '') {
+                console.log('item', item)
+                listAlbumArtist(item, function(err, obj){
+                    a.push(obj)
+                    if (index===array.length-1) {
+                      // a.sort(function(f, s){
+                      //   if (f.Artist > s.Artist) {
+                      //     return 1;
+                      //    }
+                      //   if (f.Artist < s.Artist) {
+                      //     return -1;
+                      //   }
+                      //   // a должно быть равным b
+                      //   return 0;
+                      // });
+                      callback(null, a);
+                    }
+                })
+              }
+            })
+        }
+    })
+}
+
+function mpdGetArtists(quryString, callback) {
+
+    sendCommands(cmd("list artist", []), function(err, msg) {
             if(err) {
                 callback(err);
             } else {
@@ -482,7 +573,17 @@ function getLibrary(quryString, callback) {
                 // console.log(msg)
                 callback(null, msg)
             }
-        });   
+        });
+}
+
+function mpdShuffle(callback) {
+	sendCommands(cmd("shuffle",[]), function(err){
+		if(err) {
+			callback(err);
+		} else {
+			callback(null)
+		}
+	})
 }
 
 function parseLsinfoMessage(msg, param) {
@@ -526,35 +627,55 @@ function convertTime(timeInSeconds) {
         if (days > 0) {
             days = days + "d:"
             hours = hours%24
-        } else 
+        } else
             days = ''
-        var t = days + hours + ":" + 
+        var t = days + hours + ":" +
         (trackTime.getMinutes()<10?'0':'') + trackTime.getMinutes() + ":" +
               (trackTime.getSeconds() < 10 ? '0' : '') + trackTime.getSeconds();
     }
-        
-    else 
+
+    else
         var t =  (trackTime.getMinutes()<10?'0':'') + trackTime.getMinutes() + ":" +
               (trackTime.getSeconds() < 10 ? '0' : '') + trackTime.getSeconds();
-    //console.log('TiS: ', timeInSeconds, ' time: ', t)              
+    //console.log('TiS: ', timeInSeconds, ' time: ', t)
     return t
 
 }
 
+function getQuenue(callback) {
+
+    sendCommands([cmd("playlistinfo",[])],
+        function(err, msg) {
+            if (err) {
+                callback(err);
+            } else {
+                var queue = parseQuenueMessage(msg);
+                //console.log('queue: ', queue)
+                callback(null,queue);
+            }
+        });
+};
+
 function parseQuenueMessage(msg) {
+
+   // console.log('msg', msg)
     var results = [];
     var obj = {};
         msg.split('\n').forEach((lsline) => {
+
             if(lsline.length === 0) {
                 return;
             }
             var keyValue = lsline.match(/([^ ]+): (.*)/);
+
             if (keyValue == null) {
               throw new Error('Could not parse entry "' + lsline + '"')
             }
-                if (keyValue[1]==='Time') {
-                    keyValue[2] = convertTime(keyValue[2])
-                }
+            if (keyValue[1]==='Time') {
+                keyValue[2] = convertTime(keyValue[2])
+            }
+            //console.log('lsline', keyValue[1],' = ', keyValue[2])
+
             if (obj[keyValue[1]] !== undefined) {
                 if (!obj.hasOwnProperty('Title')) {
                    var filename = path.basename(obj.file);
@@ -572,6 +693,33 @@ function parseQuenueMessage(msg) {
     return results;
 }
 
+function findCoverImage (item, callback) {
+    item.forEach(function(a){
+        if(a.indexOf('.BAK')>=0) {
+            console.log('a',a)
+            callback(a)
+        }
+    })
+}
+
+function readDir(path, callback) {
+    fs.readdir(path, function(err, item){
+        if (err) {
+            console.log(err)
+        } else {
+
+            findCoverImage(item, function(a){
+                callback(a)
+            })
+
+        }
+
+
+    })
+}
+
+
+
 var self = module.exports = {
 
     setup: function setup(options) {
@@ -582,11 +730,17 @@ var self = module.exports = {
     onStatusChange: function onStatusChange(callback) {
         broadcastStatus.push(callback);
     },
+    onOptionChange: function onOptionChange(callback) {
+        broadcastOption.push(callback);
+    },
     onQueueChange: function onQueueChange(callback) {
         broadcastQuenue.push(callback);
     },
-    onUpdateDB: function onUpdateDB(callback) {
-        //updateClients.push(callback);
+    onDatabaseChange: function onDatabaseChange(callback) {
+        broadcastDatabase.push(callback);
+    },
+    onDatabaseUpdate: function onDatabaseUpdate(callback) {
+        broadcastDbUpdate.push(callback);
     },
 
     getMpdStatus: function getMpdStatus(callback) {
@@ -623,17 +777,17 @@ var self = module.exports = {
         getPlaylistSongs(playlist, callback);
     },
 
-    albumArt: function albumArt(url, callback) {
-        getAlbumart(url, callback)
-    },
+    // albumArt: function albumArt(url, callback) {
+    //     getAlbumart(url, callback)
+    // },
     getDirList: function getDirList( url, param, callback) {
         getDir(url, param, callback)
     },
-    getAlbum: function getAlbumLib(callback) {
-        getAlbum(callback)
-    },
-    getArtistLib: function getArtistLib(callback) {
-        getArtist(callback)
+    // getAlbum: function getAlbumLib(callback) {
+    //     getAlbum(callback)
+    // },
+    getArtists: function getArtists(q, callback) {
+        mpdGetArtists( q, callback)
     },
     testCommand: function testCommand(cmd, arg, callback) {
         testCommandMPD(cmd, arg, callback)
@@ -651,11 +805,14 @@ var self = module.exports = {
     getQuenue: function doGetQuenue(callback) {
         getQuenue(callback)
     },
-    updateDB: function doUpdateDB(callback) {
-        updateDB(callback)
+    updateDB: function updateDB(callback) {
+        doUpdateDB(callback)
     },
-    getLibrary: function dogetLibrary(q, callback) {
-        getLibrary(q, callback)
+    rescanDB: function rescanDB(callback) {
+        doRescanDB(callback)
+    },
+    getAlbums: function getAlbums(callback) {
+        mpdGetAlbums(callback)
     },
     getMpdStats: function getMpdStats(callback) {
         sendStatsRequest(callback)
@@ -672,5 +829,11 @@ var self = module.exports = {
     },
     doRemoveFromQueue: function doRemoveFromQueue(songId, callback) {
         removeFromQueue(songId, callback)
+    },
+    doShuffle: function duShuffle(callback) {
+				mpdShuffle (callback)
+    },
+    doReadDir: function doReadDir(path,callback) {
+        readDir(path,callback)
     }
 };

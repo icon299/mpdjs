@@ -31,38 +31,58 @@ var prepareItem = function(source) {
 //   });
 // });
 
-router.get('/radio', function(req, res, next) {
-    db.find({}).sort({id: 1}).exec(function (err, item) {
-    res.render('index',{item});
-  });
+router.get('/xx', function(req, res ) {
+  mpdClient.doReadDir('c:', function(item){
+    res.send(item);
+  })
+    
+  
+//    res.render('home');
+  // });
 });
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res ) {
   mpdClient.getQuenue(function(err,item){
-    if (err) console.log(err)
-    console.log('item:',item.length);
-    res.render('home',{item});
+    if (err) {
+      console.log(err)
+    } 
+      res.render('home',{item});
+    
   })
 //    res.render('home');
   // });
 });
 
+router.get('/radio', function(req, res) {
+    db.find({}).sort({id: 1}).exec(function (err, item) {
+    res.render('index',{item});
+  });
+});
+
+router.get('/menu', function(req, res) {
+    
+    res.render('mainmenu');
+  
+});
+
 router.get('/quenue', function(req,res) {
   mpdClient.getQuenue(function(err,item){
-    if (err) console.log(err)
-    //console.log(item);
-    res.render('quenue',{item});
+    if (err) {
+      console.log(err)
+    } 
+      res.render('quenue',{item});
+    
   })
 })
 
-router.get('/lib', function(req, res, next) {
-    res.render('library');  
-});  
+router.get('/lib', function(req, res) {
+    res.render('library');
+});
 
-router.get('/album', function(req, res, next) {
+router.get('/album', function(req, res) {
     mpdClient.getArtistLib(function(err, item){
       res.set({ 'content-type': 'application/json; charset=utf-8' });
-    res.send(item);  
+    res.send(item);
     })
 });
 
@@ -82,6 +102,20 @@ router.post('/mpd', (req, res) => {
   });
 });
 
+router.get('/dir', function (req,res){
+  var currDir = req.query.d;
+  var param = req.query.p;
+
+  currDir = typeof currDir !== 'undefined' ? currDir : '/';
+  param = typeof param !== 'undefined' ? param : 'all';
+  console.log("CurrDir: ", currDir)
+
+  mpdClient.getDirList(currDir, param, function (err, dirInfo, item){
+    res.render('dir',{item});
+  });
+});
+
+
 router.get('/mb', function (req,res){
   var currDir = req.query.d;
   var param = req.query.p;
@@ -89,11 +123,19 @@ router.get('/mb', function (req,res){
   currDir = typeof currDir !== 'undefined' ? currDir : '/';
   param = typeof param !== 'undefined' ? param : 'all';
   console.log("CurrDir: ", currDir)
-  
+
   mpdClient.getDirList(currDir, param, function (err, dirInfo, item){
     res.render('getdir',{item});
   });
 });
+
+router.get('/albums', (req, res) => {
+  mpdClient.getAlbums(function(err, item){
+    console.log(item)
+   res.render('albums', {item});
+  });
+})
+
 
 router.get('/progress', (req, res) => {
   res.render('progressbar')
@@ -125,6 +167,10 @@ router.get('/search', (req, res) => {
 
 router.get('/stats', (req, res) => {
   mpdClient.getMpdStats(function(err, stats){
+    if (err) {
+      res.render('stats', {stats});
+      // res.redirect('/404.html');
+    } else 
     res.render('stats', {stats});
   });
 })
