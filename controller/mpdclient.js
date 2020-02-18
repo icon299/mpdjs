@@ -5,6 +5,7 @@ var cmd = mpd.cmd;
 var debug = require('debug')('mpd.fm:mpdclient');
 var fs = require('fs');
 var fileclient = require('./fileclient.js')
+var libdb = require('./libdb.js')
 var path = require('path');
 
 // Private
@@ -39,6 +40,13 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
+        libdb.connect(function(err, count){
+          if (!err) {
+            insertArtistData(0, function(rcount){
+              debug('record count:', rcount)
+            });
+          }
+        });
         mpdClient.on('system', function(name) {
             debug('System event received: ' + name);
             switch(name) {
@@ -70,6 +78,12 @@ function connect() {
                     });
                     break;
                 case "database":
+                    insertArtistData(1, function(err, numRec){
+                      if (err) {
+                        console.log(err)
+                      } else 
+                      debug('inserting records:', numRec)
+                    })
                     sendStatsRequest(function(error, data) {
                         if(!error) {
                             broadcastDatabase.forEach(function(callback) {
@@ -88,24 +102,6 @@ function connect() {
                     });
                     break;
             }
-
-
-
-            // if(name === "update") {
-            //     if (mpdUpdateDB) { // выполнить после updateDB
-            //         mpdUpdateDB = 0; // сбросим флаг
-
-            //     } else { // поступила команда update music database
-            //         mpdUpdateDB = 1;
-            //         sendOnlyStatusRequest(function(error,updateDB) {
-            //             if(!error) {
-            //                 updateClients.forEach(function(callback) {
-            //                     callback(updateDB);
-            //                 });
-            //             }
-            //         });
-            //     }
-            // }
         });
     });
 
@@ -154,6 +150,28 @@ function sendCommands(commands, callback) {
     } catch(error) {
         callback(error)
     }
+}
+
+function insertArtistData(clear, callback) {
+  if (clear) {
+    libdb.delete(function(err, numRemoved){
+      if (err) {
+        console.log(err)
+      }
+    })
+  }
+  mpdGetArtistsAlbums(function(data){
+    data.forEach(function(item){
+      libdb.insert(item, function(err, newData){
+        if (err) {
+          console.log(err)
+        } else
+        debug('inserting', newData)
+      })
+    })
+    callback(data.length)
+
+  })
 }
 
 function sendStatusRequest(callback) {
@@ -335,23 +353,6 @@ function sendElapsedRequest(callback) {
     });
 }
 
-// function getAlbumart(url, callback){
-
-//     sendCommands(cmd("listall", ['music/usbmount/usb0/']),
-//         function(err, msg) {
-//             if(err) {
-
-//                 callback(err);
-//             } else {
-
-//                 var albumart = mpd.parseArrayMessage(msg);
-//                 callback(null, JSON.stringify(albumart));
-//             }
-//         });
-// };
-
-
-
 function getDir(url, param , callback){
 debug('url = ',url)
     sendCommands([cmd ("lsinfo", [url])],
@@ -373,18 +374,6 @@ debug('url = ',url)
             }
         });
 };
-
-// function getAlbum (callback) {
-//     sendCommands(cmd("list album", []), function(err, msg) {
-//             if(err) {
-//                 callback(err);
-//             } else {
-//                 var item = mpd.parseArrayMessage(msg);
-//                 debug('album item: ', item)
-//                 callback(null, item)
-//             }
-//         });
-// }
 
 function getArtist (callback) {
     sendCommands(cmd("urlhandlers", []), function(err, msg) {
@@ -498,10 +487,34 @@ function removeFromQueue(id, callback) {
     });
 }
 
+function getAlbumPath (albumName, callback) {
+  var o = {}
+  var s = {'path': '5555555555555'}
+  sendCommands(cmd("find album",[albumName]), function(err, msg){
+    if (!err) {
+      var albumData = mpd.parseArrayMessage(msg)
+      if (albumData.length > 0) {
+        // var albumPath = albumData[0].file;
+        // debug(albumName, albumData)
+      }
+      var albumPath = path.dirname(albumData[0].file)
+      o = {'path': albumPath}
+      callback(o)
+    } else {
+      console.log(err)
+    }
+  })
+  // callback(s)
+}
+
+function getAlbumArt(albumName, callback) {
+
+}
 
 function getAlbumsForArtist (artist, callback){
   var obj = {}
   var albumArtist = []
+  var albumData = {}
   sendCommands(cmd("list album artist " + '"' + artist.Artist +'"', []), function(err,msg){
     if (err) {
       callback(err)
@@ -527,6 +540,7 @@ sendCommands(cmd("list artist", []), function(err, msg) {
       var artistsList = mpd.parseArrayMessage(msg)
       artistsList.forEach(function(item, index, array) {
         getAlbumsForArtist(item, function(err, data){
+          // debug(data)
           for (var i = data.length - 1; i >= 0; i--) {
             albumArtistArr.push(data[i])
           }
@@ -540,7 +554,7 @@ sendCommands(cmd("list artist", []), function(err, msg) {
               }
               return 0;
             });
-            callback(null, albumArtistArr)
+            callback(albumArtistArr)
           }
         })
       })

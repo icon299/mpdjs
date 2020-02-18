@@ -8,7 +8,7 @@ var db = require('./database.js')
 var fileup = require('./fileclient.js');
 var WebSocket = require('ws');
 
-var stationFile = process.env.STATION_FILE || path.join(__dirname, '../data/stations.json');
+var stationFile = process.env.STATION_FILE || path.join(__dirname, '../data/stations.db');
 
 //function sendWSSMessage(client, type, data, showDebug = true) {
 function sendWSSMessage(client, type, data, showDebug)  {

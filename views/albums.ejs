@@ -21,13 +21,11 @@
       <ul>
       <% item.forEach(function(item){ %>
         <li>
-          <a href=""><img class="image" src="/img/playlist.png" alt="item.station"></a>
+          <img class="image" src="/img/playlist.png" alt="item.station">
           <div onclick="getPage('/radio')">
-
             <span class="name"><%=item.Album%></span>
-
             <span class="comment"><%=item.Artist%></span>
-            <!-- <span class="arrow"></span>  -->
+            <span class="arrow"></span> 
           </div>
         </li>
       <% }) %>

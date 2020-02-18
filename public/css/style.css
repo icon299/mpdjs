@@ -392,13 +392,13 @@ img {
     -webkit-background-size: 57px;
 }
 .homelist .name {
-    /*font-size: 11pt;*/
+    font-size: 12pt;
     white-space: nowrap;
     display: block;
     overflow: hidden;
     /*color: #000;*/
     /*color: rgb(73,102,145);*/
-    max-width: 60%;
+    max-width: 86%;
     text-overflow: ellipsis;
     /*font-weight: 500;*/
 
@@ -412,7 +412,7 @@ img {
     font-size: 14px;
     color: #7f7f7f;
     display: block;
-    width: 93%;
+    width: 86%;
     font-weight: 400;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -488,13 +488,13 @@ img {
     padding-top: 0.5em;
 }
 #player-content {
-    /*width: 100%;*/
-    /*position: fixed;*/
-    /*min-height: 250px;*/
-    /*margin-top: 10px;*/
-    /*height: auto;*/
-    /*z-index: 0;*/
-    /*overflow: hidden;*/
+    width: 100%;
+    position: fixed;
+    min-height: 250px;
+    margin-top: 10px;
+    height: auto;
+    z-index: 0;
+    overflow: hidden;
 }
 #player {
     width: 100%;
@@ -522,7 +522,7 @@ img {
     width: 100%;
     overflow: hidden;
 }
-        .station-text-inside > p {
+.station-text-inside > p {
 
     margin: 0;
 }
@@ -575,14 +575,14 @@ img {
     -webkit-background-size: 57px;
 }
 .applist .name {
-    font-size: 16px;
+    font-size: 12pt;
     white-space: nowrap;
     display: block;
     overflow: hidden;
     color: rgb(0,0,0);
-    max-width: 75%;
+    max-width: 70%;
     text-overflow: ellipsis;
-    font-weight: 500;
+    font-weight: 400;
     margin: 0px 0 0 70px;
     /*position: absolute;*/
     /*top: 4px;*/
@@ -590,13 +590,16 @@ img {
     /*text-shadow: #eeeeee 0 1px 0;*/
 
 }
+.applist #content .name {
+    padding-top: 10px;
+}
 .applist .dirname {
     font-size: 16px;
     white-space: nowrap;
     display: block;
     overflow: hidden;
     color: rgb(0,0,0);
-    max-width: 63%;
+    max-width: 70%;
     text-overflow: ellipsis;
     font-weight: 400;
     padding-left: 70px;
@@ -611,7 +614,7 @@ padding-top: 18px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    max-width: 73%;
+    max-width: 70%;
 }
 .applist .comment {
     margin: -4px 0 0 70px;
@@ -628,12 +631,12 @@ padding-top: 18px;
 }
 .applist .arrow {
     position: absolute;
-    width: 36px!important;
-    height: 36px!important;
-    right: 0px;
-    top: 14px;
+    width: 8px!important;
+    height: 13px!important;
+    right: 10px;
+    top: 26px;
     margin: 0!important;
-    background: url("../img/playlist_play_2.png") 0 0 no-repeat;
+    background: url("../img/arrow.png") 0 0 no-repeat;
 }
 
 .message{

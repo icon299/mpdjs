@@ -1,22 +1,20 @@
 
 var path = require('path');
 var neDB = require('nedb');
-var dbFile = path.join(__dirname, '../data/station.db');
 
-var db = new neDB ({filename: dbFile})
-var libDB = new neDB();
+var libdb = new neDB();
 
 function connect(callback) {
-  db.loadDatabase(function (err) {
+  libdb.loadDatabase(function (err) {
       if (err) {
         callback(err);
       }
-      db.count({}, function (err, count) {
+      libdb.count({}, function (err, count) {
         if (err)
           callback(err);
 
         if (count < 1) {
-            callback('station list is empty.')
+            callback('libdb is empty.')
         }
         callback(null, count);
       });
@@ -24,7 +22,7 @@ function connect(callback) {
 };
 
 function selectall(callback) {
-  db.find({}).sort({id: 1}).exec(function (err, docs) {
+  libdb.find({}).sort({id: 1}).exec(function (err, docs) {
     if (err) {
      calback(err);
    } else {
@@ -35,14 +33,14 @@ function selectall(callback) {
 
 function insert(data, callback) {
 
-  db.count({}, function (err, count) {
-    if(err) {
-      callback(err);
-    }
-    data["id"] = count+1;
-  })
+  // libdb.count({}, function (err, count) {
+  //   if(err) {
+  //     callback(err);
+  //   }
+  //   data["id"] = count+1;
+  // })
 
-  db.insert(data, function (err,newData) {
+  libdb.insert(data, function (err,newData) {
     if(err) {
       console.log(err.message);
     } else {
@@ -52,7 +50,15 @@ function insert(data, callback) {
 };
 
 function update(data, callback) {
-  db.update()
+  libdb.update()
+}
+
+function deleteAll(callback) {
+  libdb.remove({}, { multi: true }, function (err, numRemoved) {
+    
+      callback(err, numRemoved)
+    
+  });
 }
 
 var self = module.exports = {
@@ -67,6 +73,9 @@ var self = module.exports = {
 
     insert: function insertFile(data,callback) {
       insert(data,callback);
+    },
+    delete: function deleteR(callback) {
+      deleteAll(callback)
     }
 }
 

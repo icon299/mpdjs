@@ -47,10 +47,7 @@ router.get('/', function(req, res ) {
       console.log(err)
     } 
       res.render('home',{item});
-    
   })
-//    res.render('home');
-  // });
 });
 
 router.get('/radio', function(req, res) {
@@ -71,20 +68,8 @@ router.get('/quenue', function(req,res) {
       console.log(err)
     } 
       res.render('quenue',{item});
-    
   })
 })
-
-router.get('/lib', function(req, res) {
-    res.render('library');
-});
-
-router.get('/album', function(req, res) {
-    mpdClient.getArtistLib(function(err, item){
-      res.set({ 'content-type': 'application/json; charset=utf-8' });
-    res.send(item);
-    })
-});
 
 router.get('/mpd', function(req, res) {
   //mpdClient.testCommand('commands','', function(err,msg){
@@ -101,20 +86,6 @@ router.post('/mpd', (req, res) => {
     //res.redirect(303,'/mpd');
   });
 });
-
-router.get('/dir', function (req,res){
-  var currDir = req.query.d;
-  var param = req.query.p;
-
-  currDir = typeof currDir !== 'undefined' ? currDir : '/';
-  param = typeof param !== 'undefined' ? param : 'all';
-  console.log("CurrDir: ", currDir)
-
-  mpdClient.getDirList(currDir, param, function (err, dirInfo, item){
-    res.render('dir',{item});
-  });
-});
-
 
 router.get('/mb', function (req,res){
   var currDir = req.query.d;
@@ -142,21 +113,6 @@ router.get('/artists', (req, res) => {
   });
 })
 
-
-router.get('/progress', (req, res) => {
-  res.render('progressbar')
-})
-
-router.get('/library', (req, res) => {
-  console.log('reg.body: ',req.body);
-  var arg = [req.body.param];
-  mpdClient.getAlbum(function(err, item){
-  //mpdClient.testCommand(req.body.command, arg, function(err,msg){
-    res.render('library', {item});
-    //res.redirect(303,'/mpd');
-  });
-});
-
 router.get('/search', (req, res) => {
   var body = {
     size: 200,
@@ -179,12 +135,6 @@ router.get('/stats', (req, res) => {
     } else 
     res.render('stats', {stats});
   });
-})
-
-router.get('/mpddb',(req, res) => {
-
-      res.render('stats')
-
 })
 
 router.get('/db', function(req, res, next) {
@@ -225,14 +175,6 @@ router.delete('/db', function(req, res) {
         res.json(item);
     });
 });
-
-router.get('/pl', function(req,res) {
-  mpdClient.getPlayLists(function(err,item){
-    if (err) console.log(err)
-    console.log('Router_log: ',item);
-    res.render('playlists',{item});
-  })
-})
 
 router.get('/edit',(req, res) => {
   db.find({}).sort({id: 1}).exec(function (err, stations) {
