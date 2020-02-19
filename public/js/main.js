@@ -486,6 +486,7 @@ function app() {
             if (queue.length > 1) {
                 html = '<li class="title">Playlist</li>'
                 queue.forEach(function(item){
+                    console.log(item)
                 var artist = item.artist
                     html +=
                     '<li id="quenue_' + item.id + '"' + 'onclick='+'sendPlayId("'+item.id+ '")' + '>'
@@ -500,7 +501,7 @@ function app() {
                     if (item.artist)
                     html += item.artist + ' - '
                     if (item.album)
-                    html += item.album + ' - '
+                    html += item.album
                     html += '</span>'
                     // html += '<span class="arrow" onclick="onRemoveFromQueue(' + item.id + ')">'
                     // html += '<!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->'
@@ -528,7 +529,7 @@ function app() {
         try {
             socket.send(JSON.stringify(msg));
         } catch (error) {
-            data.errorState.wssDisconnect = true;
+            //data.errorState.wssDisconnect = true;
             //showError('Can\'t connect to server...');
         }
     };

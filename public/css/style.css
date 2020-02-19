@@ -488,13 +488,13 @@ img {
     padding-top: 0.5em;
 }
 #player-content {
-    width: 100%;
+/*    width: 100%;
     position: fixed;
     min-height: 250px;
     margin-top: 10px;
     height: auto;
     z-index: 0;
-    overflow: hidden;
+    overflow: hidden;*/
 }
 #player {
     width: 100%;
@@ -593,7 +593,7 @@ img {
 .applist #content .name {
     padding-top: 10px;
 }
-.applist .dirname {
+.applist .dirname, .applist .artistname {
     font-size: 16px;
     white-space: nowrap;
     display: block;

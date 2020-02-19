@@ -40,10 +40,14 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
+          var ts = Date.now();
+          console.log('start insert base', Math.floor(ts/1000));
         libdb.connect(function(err, count){
           if (!err) {
-            insertArtistData(0, function(rcount){
-              debug('record count:', rcount)
+            insertArtistData(1, function(rcount){
+              // debug('record count:', rcount)
+              var tse = Date.now();
+              console.log('Stop insert base', Math.floor(tse/1000), 'sec');
             });
           }
         });
@@ -81,8 +85,11 @@ function connect() {
                     insertArtistData(1, function(err, numRec){
                       if (err) {
                         console.log(err)
-                      } else 
-                      debug('inserting records:', numRec)
+                      } else {
+
+                      // debug('inserting records:', numRec)  
+                      }
+                      
                     })
                     sendStatsRequest(function(error, data) {
                         if(!error) {
@@ -153,25 +160,54 @@ function sendCommands(commands, callback) {
 }
 
 function insertArtistData(clear, callback) {
+
   if (clear) {
     libdb.delete(function(err, numRemoved){
       if (err) {
         console.log(err)
+      } else {
+        //libdb.compact();
       }
     })
   }
-  mpdGetArtistsAlbums(function(data){
-    data.forEach(function(item){
-      libdb.insert(item, function(err, newData){
+  mpdGetArtistsAlbums(function(err, data){
+    debug(data)
+    var searchResult = [];
+    var obj = {}
+    data.forEach(function(item,index,array){
+      sendCommands(cmd("find album",[item.Album]), function(err,msg){
         if (err) {
           console.log(err)
-        } else
-        debug('inserting', newData)
+        } else {
+          searchResult = mpd.parseArrayMessage(msg)
+          // debug("======== FIND ========", searchResult)
+            for (var i = 0; i < searchResult.length; i++) {
+
+              
+              if (searchResult[i].Artist == item.Artist) {
+                if (searchResult[i].hasOwnProperty('file')) {
+
+                  item.file = searchResult[i].file
+                  // debug("ARTIST", searchResult[i].Artist,item.Artist, item.file)
+                  // item.path = path.dirname(searchResult[i].file)
+                }
+                // debug("++++++++PATH+++++++++++", searchResult[i].Artist, item.Album, item.path)
+                libdb.insert(item, function(err, newData){
+                  if (err) {
+                    console.log(err)
+                  } else {
+                     // debug('+++++++++ inserting ++++++++++++', newData)
+                  }
+                })
+                // break;
+              }
+            }
+        }
       })
     })
     callback(data.length)
-
   })
+
 }
 
 function sendStatusRequest(callback) {
@@ -190,6 +226,9 @@ function sendStatusRequest(callback) {
                 callback(null, status);
             }
     });
+    libdb.selectAlbum("Mandalorian: Chapter 1 (Original Score)", function(items){
+      console.log(items)
+    })
 }
 
 function sendStatsRequest(callback){
@@ -222,7 +261,7 @@ function sendUpdateIDRequest(callback) {
             for(var i = 0; i < keys.length;i++){
                 if(keys[i].toLowerCase() === 'updating_db') {
                     updateDB = data[keys[i]]//value;
-                    debug("****", updateDB)
+                    debug("update_db job_id", updateDB)
                     break;
                 }
             }
@@ -380,7 +419,7 @@ function getArtist (callback) {
             if(err) {
                 callback(err);
             } else {
-                var item = mpd.parseArrayMessage(msg);
+                var item = parseArrayMessage(msg);
                 callback(null, item)
             }
         });
@@ -396,6 +435,7 @@ function testCommandMPD(command, param, callback) {
                 callback(err);
             } else {
                 var msg = mpd.parseArrayMessage(msg);
+                // var msg = mpd.parseKeyValueMessage(msg);
                 msg = JSON.stringify(msg);
                 // console.log(msg)
                 callback(null, msg)
@@ -514,8 +554,7 @@ function getAlbumArt(albumName, callback) {
 function getAlbumsForArtist (artist, callback){
   var obj = {}
   var albumArtist = []
-  var albumData = {}
-  sendCommands(cmd("list album artist " + '"' + artist.Artist +'"', []), function(err,msg){
+  sendCommands(cmd("list album artist", [artist.Artist]), function(err,msg){
     if (err) {
       callback(err)
     } else {
@@ -554,7 +593,8 @@ sendCommands(cmd("list artist", []), function(err, msg) {
               }
               return 0;
             });
-            callback(albumArtistArr)
+            // debug(albumArtistArr)
+            callback(null,albumArtistArr)
           }
         })
       })
@@ -646,8 +686,9 @@ function getQuenue(callback) {
             if (err) {
                 callback(err);
             } else {
-                var queue = parseQuenueMessage(msg);
+                // var queue = parseQuenueMessage(msg);
                 //console.log('queue: ', queue)
+                var queue = parseMpdMessage(msg, 'Id');
                 callback(null,queue);
             }
         });
@@ -689,6 +730,43 @@ function parseQuenueMessage(msg) {
         results.push(obj);
     return results;
 }
+
+function parseMpdMessage(msg, lastEntry) {
+  // var lastEntry = 'Id';
+  var results = [];
+  var obj = {};
+  // debug('parse')
+  msg.split('\n').forEach((lsline) => {
+
+    if(lsline.length === 0) {
+      return;
+    }
+    var keyValue = lsline.match(/([^ ]+): (.*)/);
+  
+
+    if (keyValue == null) {
+      throw new Error('Could not parse entry "' + lsline + '"')
+    }
+    if (keyValue[1]===lastEntry)  {
+      obj[keyValue[1]] = keyValue[2];
+      results.push(obj);
+      obj = {}
+    } else {
+
+      if (keyValue[1]==='Time') {
+         keyValue[2] = convertTime(keyValue[2])
+      } 
+        // debug('ORDER:', keyValue[1],keyValue[2], obj )
+      obj[keyValue[1]] = keyValue[2]
+      
+    }
+  })
+  return results;
+}
+
+    
+
+ 
 
 function findCoverImage (item, callback) {
     item.forEach(function(a){

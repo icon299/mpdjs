@@ -2,9 +2,10 @@
 var path = require('path');
 var neDB = require('nedb');
 var dbFile = path.join(__dirname, '../data/station.db');
+// var dbLib = path.join(__dirname, '../data/dblib.db');
 
 var db = new neDB ({filename: dbFile})
-var libDB = new neDB();
+
 
 function connect(callback) {
   db.loadDatabase(function (err) {

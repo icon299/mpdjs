@@ -82,6 +82,7 @@ router.post('/mpd', (req, res) => {
   var arg = [req.body.param];
 
   mpdClient.testCommand(req.body.command, arg, function(err,msg){
+// console.log("MSG", msg)
     res.render('mpd', {msg});
     //res.redirect(303,'/mpd');
   });

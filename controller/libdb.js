@@ -1,8 +1,9 @@
 
 var path = require('path');
 var neDB = require('nedb');
-
-var libdb = new neDB();
+var dbLib = path.join(__dirname, '../data/dblib.db');
+//var libdb = new neDB();
+var libdb = new neDB(dbLib);
 
 function connect(callback) {
   libdb.loadDatabase(function (err) {
@@ -55,10 +56,21 @@ function update(data, callback) {
 
 function deleteAll(callback) {
   libdb.remove({}, { multi: true }, function (err, numRemoved) {
-    
+      
       callback(err, numRemoved)
     
   });
+}
+
+function doSelectAlbum(a, callback){
+  
+  var q = '/AR/'; 
+  
+  libdb.find({Album: "A Feast of Wire"}, function(err,items) {
+    if (!err) {
+      callback(items);
+    }
+  })
 }
 
 var self = module.exports = {
@@ -76,6 +88,13 @@ var self = module.exports = {
     },
     delete: function deleteR(callback) {
       deleteAll(callback)
+    },
+    compact: function compactD () {
+     libdb.persistence.compactDatafile
+    },
+    selectAlbum: function selectAlbum(a, callback) {
+      doSelectAlbum(a, callback)
     }
+
 }
 

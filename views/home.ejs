@@ -71,10 +71,11 @@
 
       <div>
         <ul id="ul_queue">
-        <% if (item) { %>
+        <% if (item !== undefined) { %>
         <% if (item.length > 1) { %>                
           <li class="title">Playlist</li>
           <% item.forEach(function(item){ %>
+          <% if (item.Id !== undefined) {%>
           <li id="quenue_<%=item.Id%>" onclick="sendPlayId('<%=item.Id%>')">
             <div>
               <span class="name">
@@ -93,6 +94,7 @@
                         <!-- </span> --> 
             </div>
           </li>
+          <% } %>  
           <% }) %>
         <% } %>
         <% } %>                
