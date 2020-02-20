@@ -171,7 +171,7 @@ function insertArtistData(clear, callback) {
     })
   }
   mpdGetArtistsAlbums(function(err, data){
-    debug(data)
+    //debug(data)
     var searchResult = [];
     var obj = {}
     data.forEach(function(item,index,array){
@@ -188,10 +188,15 @@ function insertArtistData(clear, callback) {
                 if (searchResult[i].hasOwnProperty('file')) {
 
                   item.file = searchResult[i].file
+
+
                   // debug("ARTIST", searchResult[i].Artist,item.Artist, item.file)
                   // item.path = path.dirname(searchResult[i].file)
                 }
                 // debug("++++++++PATH+++++++++++", searchResult[i].Artist, item.Album, item.path)
+                
+                
+                   
                 libdb.insert(item, function(err, newData){
                   if (err) {
                     console.log(err)
@@ -226,8 +231,11 @@ function sendStatusRequest(callback) {
                 callback(null, status);
             }
     });
-    libdb.selectAlbum("Mandalorian: Chapter 1 (Original Score)", function(items){
+    libdb.selectAlbum("Album", "A Feast of Wire", function(items){
       console.log(items)
+    })
+    libdb.selectAlbum("Artist","ARTIST", function(items){
+      console.log("select artist:",items)
     })
 }
 
@@ -434,7 +442,7 @@ function testCommandMPD(command, param, callback) {
             if(err) {
                 callback(err);
             } else {
-                var msg = mpd.parseArrayMessage(msg);
+                //var msg = mpd.parseArrayMessage(msg);
                 // var msg = mpd.parseKeyValueMessage(msg);
                 msg = JSON.stringify(msg);
                 // console.log(msg)

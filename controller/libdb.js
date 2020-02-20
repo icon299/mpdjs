@@ -62,11 +62,15 @@ function deleteAll(callback) {
   });
 }
 
-function doSelectAlbum(a, callback){
+function doSelectAlbum(what, a, callback){
   
-  var q = '/AR/'; 
+  var q = '{"' + what + '":"' + a + '"}';
+  var obj = JSON.parse(q);
+  //obj ={}
+console.log("obj", obj)
   
-  libdb.find({Album: "A Feast of Wire"}, function(err,items) {
+  // libdb.find( Object.assign({},obj), function(err,items) {
+    libdb.find( obj).sort({Artist:-1}).exec( function(err,items) {
     if (!err) {
       callback(items);
     }
@@ -92,8 +96,8 @@ var self = module.exports = {
     compact: function compactD () {
      libdb.persistence.compactDatafile
     },
-    selectAlbum: function selectAlbum(a, callback) {
-      doSelectAlbum(a, callback)
+    selectAlbum: function selectAlbum(what,a, callback) {
+      doSelectAlbum(what,a, callback)
     }
 
 }
