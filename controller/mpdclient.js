@@ -40,17 +40,22 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
-          var ts = Date.now();
-          console.log('start insert base', Math.floor(ts/1000));
+          // var ts = Date.now();
+          // console.log('start insert base', Math.floor(ts/1000));
         libdb.connect(function(err, count){
           if (!err) {
             insertArtistData(1, function(rcount){
               // debug('record count:', rcount)
-              var tse = Date.now();
-              console.log('Stop insert base', Math.floor(tse/1000), 'sec');
+              // var tse = Date.now();
+              // console.log('Stop insert base', Math.floor(tse/1000), 'sec');
             });
           }
         });
+
+        fileclient.searchCover('D:/mpd/music',function(err, files){
+          console.log(files);
+        });
+
         mpdClient.on('system', function(name) {
             debug('System event received: ' + name);
             switch(name) {
@@ -434,16 +439,23 @@ function getArtist (callback) {
 }
 
 function testCommandMPD(command, param, callback) {
+  var d = ["file", "directory", "playlist","outputid","plugin", "cpos"];
     if (param != '')
         var arg = [param];
     else var arg = [];
+    switch(command) {
+      case 'list artist':
+      case 'list album':
+        d = []
+        break;
+    }
 
     sendCommands(cmd(command, arg), function(err, msg) {
             if(err) {
                 callback(err);
             } else {
-                //var msg = mpd.parseArrayMessage(msg);
-                // var msg = mpd.parseKeyValueMessage(msg);
+                var msg = parseMpdOutput(msg,d);
+                 //var msg = mpd.parseArrayMessage(msg);
                 msg = JSON.stringify(msg);
                 // console.log(msg)
                 callback(null, msg)
@@ -738,6 +750,60 @@ function parseQuenueMessage(msg) {
         results.push(obj);
     return results;
 }
+// def _read_objects(self, delimiters=[]):
+//         obj = {}
+//         for key, value in self._read_pairs():
+//             key = key.lower()
+//             if obj:
+//                 if key in delimiters:
+//                     yield obj
+//                     obj = {}
+//                 elif key in obj:
+//                     if not isinstance(obj[key], list):
+//                         obj[key] = [obj[key], value]
+//                     else:
+//                         obj[key].append(value)
+//                     continue
+//             obj[key] = value
+//         if obj:
+//             yield obj
+
+function parseMpdOutput (msg, delimiters ) {
+  delimiters = typeof delimiters !== 'undefined' ?  delimiters : [];
+  debug("delimiters", delimiters)
+  var results = [];
+  var obj = {};
+  // debug('parse')
+  msg.split('\n').forEach((lsline) => {
+
+    if(lsline.length === 0) {
+      return;
+    }
+    var keyValue = lsline.match(/([^ ]+): (.*)/);
+    
+    if (keyValue == null) {
+      throw new Error('Could not parse entry "' + lsline + '"')
+    }
+
+    keyValue[1].toLowerCase();
+    debug("keyValue", keyValue[1])
+    
+    if (Object.keys(obj).length > 0) {
+      
+      if ((delimiters.indexOf(keyValue[1]) >= 0) || (delimiters.length == 0)) {
+        debug("delim now", keyValue[1])
+        results.push(obj)
+        console.log('push delim')
+        obj = {}
+      } 
+    } 
+    obj[keyValue[1]] = keyValue[2]
+  })
+  results.push(obj)
+  console.log('push end')
+  return results;
+}
+
 
 function parseMpdMessage(msg, lastEntry) {
   // var lastEntry = 'Id';

@@ -40,6 +40,19 @@ var saveasJSON = function(msg, callback) {
   })
 }
 
+function doSearchCover(dirPath, callback){
+  fs.readdir(dirPath, function (err, files) {
+    if (err) {
+      console.log(err);
+      // return;
+    } else {
+     
+
+       callback(null, files)
+  }
+  });
+}
+
 function parseConfig(config, callback) { 
   fs.readFile(config, 'utf8', function (err, line) {
     if (err) {
@@ -96,6 +109,9 @@ var self = module.exports = {
     },
     parseMPDConfig: function parseMPDConfig(config, callback) {
       parseConfig(config, callback)
+    },
+    searchCover: function searchCover(path, callback) {
+      doSearchCover(path, callback)
     } 
 
 }
