@@ -39,7 +39,7 @@
 {"station":"Дискотека 80-х","desc":"Проект Дискотека 80-х — является частью Авторадио. ","logo":"img/station_logo/Diskoteka-80.png","stream":"http://ic2.101.ru/a1?95de7eef","id":34,"_id":"WjQJCmt9ZC3mgQrG"}
 {"id":3,"station":"80s80s","desc":"Real 80s radio. Rediscover the music that you know from the 80s!","logo":"img/station_logo/80s80s.png","stream":"http://80s80s.hoerradar.de/80s80s-mweb-mp3-hq","_id":"X8lG8K72SpHpa2g4"}
 {"id":12,"station":"Radiola","desc":"Soviet songs from 60s, 70s and 80s, as well as popular in the USSR foreign songs of that time.","logo":"img/station_logo/radiola.png","stream":"http://online1.gkvr.ru:8000/radiola_eka_128.mp3","_id":"ZgPWYeSR3GB2UKOZ"}
-{"id":0,"station":"Radio ZVEZDA (Moscow) 95.6 FM","desc":"","logo":"img/station_logo/zvezda.jpg","stream":"http://icecast-zvezda.cdnvideo.ru/zvezda_128","_id":"ZteyAzbt9X7rygC0"}
+{"id":0,"station":"Radio ZVEZDA (Moscow) 95.6 FM","desc":"1","logo":"img/station_logo/zvezda.jpg","stream":"http://icecast-zvezda.cdnvideo.ru/zvezda_128","_id":"ZteyAzbt9X7rygC0"}
 {"id":57,"station":"Chroma Classical","stream":"http://chromaradio.com:18000/chr_classical_aac48","desc":"","logo":"img/station_logo/chromaclassical.jpg","_id":"b8XsVQdrSY9WlYi4"}
 {"station":"Эльдорадио","desc":"Музыкальное наполнение эфира — зарубежные хиты начиная с 70-х годов и до наших дней.","logo":"img/station_logo/eldoradio.jpg","stream":"http://emgspb.hostingradio.ru/eldoradio128.mp3?35bff118","id":46,"_id":"bTvfA2UGMICbw8KS"}
 {"id":6,"station":"Радио Маяк","desc":"","logo":"img/station_logo/Маяк2017.jpg","stream":"http://icecast.vgtrk.cdnvideo.ru/mayakfm_mp3_128kbps","_id":"d8amwckhNB5u1s6u"}

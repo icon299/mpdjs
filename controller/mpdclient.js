@@ -52,9 +52,9 @@ function connect() {
           }
         });
 
-        fileclient.searchCover('D:/mpd/music',function(err, files){
-          console.log(files);
-        });
+        // fileclient.searchCover('D:/mpd/music',function(err, files){
+        //   console.log(files);
+        // });
 
         mpdClient.on('system', function(name) {
             debug('System event received: ' + name);
@@ -91,10 +91,8 @@ function connect() {
                       if (err) {
                         console.log(err)
                       } else {
-
                       // debug('inserting records:', numRec)  
                       }
-                      
                     })
                     sendStatsRequest(function(error, data) {
                         if(!error) {
