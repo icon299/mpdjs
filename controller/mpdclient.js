@@ -33,24 +33,18 @@ function connect() {
     debug('Connecting');
     mpdOptions.host = '127.0.0.1';
     mpdClient = mpd.connect(mpdOptions);
-    // fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
-    //     console.log(data)
-    // })
+    fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
+        console.log(data)
+    })
 
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
           // var ts = Date.now();
           // console.log('start insert base', Math.floor(ts/1000));
-        libdb.connect(function(err, count){
-          if (!err) {
-            insertArtistData(1, function(rcount){
-              // debug('record count:', rcount)
-              // var tse = Date.now();
-              // console.log('Stop insert base', Math.floor(tse/1000), 'sec');
-            });
-          }
-        });
+        insertArtistData(1, function(rcount){
+          
+        })
 
         // fileclient.searchCover('D:/mpd/music',function(err, files){
         //   console.log(files);
@@ -78,6 +72,7 @@ function connect() {
                     });
                     break;
                 case "options":
+                    debug('EVENT option')
                     sendStatusRequest(function(error, status) {
                         if(!error) {
                             broadcastOption.forEach(function(callback) {
@@ -87,6 +82,7 @@ function connect() {
                     });
                     break;
                 case "database":
+                    debug('EVENT database')
                     insertArtistData(1, function(err, numRec){
                       if (err) {
                         console.log(err)
@@ -103,6 +99,7 @@ function connect() {
                     });
                     break;
                 case "update":
+                    debug('EVENT update database')
                     sendUpdateIDRequest(function(error, job_id) {
                         if(!error) {
                             broadcastDbUpdate.forEach(function(callback) {
@@ -163,57 +160,73 @@ function sendCommands(commands, callback) {
 }
 
 function insertArtistData(clear, callback) {
+  libdb.connect(function(err, count){
+    if (err) {
+      console.log(err)
+    } else {
 
-  if (clear) {
-    libdb.delete(function(err, numRemoved){
-      if (err) {
-        console.log(err)
-      } else {
-        //libdb.compact();
+      if (clear) {
+        libdb.delete(function(err, numRemoved){
+          if (err) {
+            console.log(err)
+          } else {
+            //libdb.compact();
+          }
+        })
       }
-    })
-  }
+    }
+  
   mpdGetArtistsAlbums(function(err, data){
-    //debug(data)
+     debug('+++++++++++++ ArtistsAlbums ++++++++++\n', data)
     var searchResult = [];
-    var obj = {}
-    data.forEach(function(item,index,array){
-      sendCommands(cmd("find album",[item.Album]), function(err,msg){
+    //var obj = {}
+
+    data.forEach(function(item, index, array){
+      sendCommands(cmd("find album",[item.Album]), function(err, msg){
         if (err) {
           console.log(err)
         } else {
           searchResult = mpd.parseArrayMessage(msg)
-          // debug("======== FIND ========", searchResult)
+           debug("======== FIND ========", item.Album, item.Artist, searchResult)
+           var song_count = 0;
             for (var i = 0; i < searchResult.length; i++) {
-
+                
               
               if (searchResult[i].Artist == item.Artist) {
                 if (searchResult[i].hasOwnProperty('file')) {
+                    song_count ++
+                    if (song_count == 1) {
+                    // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
+                      var albumDir = path.dirname(searchResult[i].file)
+                      var obj = 
+                        { 
+                          Artist:searchResult[i].Artist,
+                          Album:searchResult[i].Album,
+                          path: albumDir,
+                        
+                        // file: searchResult[i].file
+                        }
+                    }
 
-                  item.file = searchResult[i].file
-
-
-                  // debug("ARTIST", searchResult[i].Artist,item.Artist, item.file)
-                  // item.path = path.dirname(searchResult[i].file)
                 }
-                // debug("++++++++PATH+++++++++++", searchResult[i].Artist, item.Album, item.path)
-                
-                
-                   
-                libdb.insert(item, function(err, newData){
-                  if (err) {
-                    console.log(err)
-                  } else {
-                     // debug('+++++++++ inserting ++++++++++++', newData)
-                  }
-                })
                 // break;
               }
             }
+            obj.song_count = song_count;
+                    libdb.insert(obj, function(err, newData){
+                        // debug('ITEM: ', item)
+                      if (err) {
+                        console.log(err)
+                      } else {
+                        //debug('+++++++++ inserting ++++++++++++\n', newData)
+                      }
+                    })                
+
         }
       })
     })
     callback(data.length)
+  })
   })
 
 }
@@ -234,12 +247,12 @@ function sendStatusRequest(callback) {
                 callback(null, status);
             }
     });
-    libdb.selectAlbum("Album", "A Feast of Wire", function(items){
-      console.log(items)
-    })
-    libdb.selectAlbum("Artist","ARTIST", function(items){
-      console.log("select artist:",items)
-    })
+    // libdb.selectAlbum("Album", "A Feast of Wire", function(items){
+    //   console.log(items)
+    // })
+    // libdb.selectAlbum("Artist","ARTIST", function(items){
+    //   console.log("select artist:",items)
+    // })
 }
 
 function sendStatsRequest(callback){
@@ -577,10 +590,12 @@ function getAlbumsForArtist (artist, callback){
       callback(err)
     } else {
       var artistAlbums = mpd.parseArrayMessage(msg)
+
       for (var i = artistAlbums.length - 1; i >= 0; i--) {
         obj = Object.assign(artistAlbums[i],artist)
         albumArtist.push(obj)
       }
+      debug('getAlbumsForArtist', albumArtist)
       callback(null, albumArtist)
     }
   })

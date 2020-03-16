@@ -17,7 +17,7 @@
 
 <div class="searchbox">
   <form action="" method="get">
-    <fieldset><input id="search" placeholder="search" onkeyup="myFunction()" type="text" />
+    <fieldset><input id="search" placeholder="search" onkeyup="searchLib()" type="text" />
     <input id="submit" type="hidden" /></fieldset>
   </form>
 </div>
@@ -48,7 +48,7 @@
 
   <% include ./footer.ejs %>
 <script>
-function myFunction() {
+function searchLib() {
   // Declare variables
   var input, filter, ul, li, a, i, txtValue;
   input = document.getElementById('search');

@@ -1,16 +1,17 @@
 
 var path = require('path');
+var debug = require('debug')('mpd.fm:libdb');
 var neDB = require('nedb');
 var dbLib = path.join(__dirname, '../data/dblib.db');
 //var libdb = new neDB();
-var libdb = new neDB(dbLib);
+var db = new neDB(dbLib);
 
 function connect(callback) {
-  libdb.loadDatabase(function (err) {
+  db.loadDatabase(function (err) {
       if (err) {
         callback(err);
       }
-      libdb.count({}, function (err, count) {
+      db.count({}, function (err, count) {
         if (err)
           callback(err);
 
@@ -23,7 +24,7 @@ function connect(callback) {
 };
 
 function selectall(callback) {
-  libdb.find({}).sort({id: 1}).exec(function (err, docs) {
+  db.find({}).sort({id: 1}).exec(function (err, docs) {
     if (err) {
      calback(err);
    } else {
@@ -41,7 +42,8 @@ function insert(data, callback) {
   //   data["id"] = count+1;
   // })
 
-  libdb.insert(data, function (err,newData) {
+  db.insert(data, function (err,newData) {
+    // console.log("++ libdbInsert ++ ", data.file)
     if(err) {
       console.log(err.message);
     } else {
@@ -51,11 +53,11 @@ function insert(data, callback) {
 };
 
 function update(data, callback) {
-  libdb.update()
+  db.update()
 }
 
 function deleteAll(callback) {
-  libdb.remove({}, { multi: true }, function (err, numRemoved) {
+  db.remove({}, { multi: true }, function (err, numRemoved) {
       
       callback(err, numRemoved)
     
@@ -70,7 +72,7 @@ function doSelectAlbum(what, a, callback){
 console.log("obj", obj)
   
   // libdb.find( Object.assign({},obj), function(err,items) {
-    libdb.find( obj).sort({Artist:-1}).exec( function(err,items) {
+    db.find( obj).sort({Artist:-1}).exec( function(err,items) {
     if (!err) {
       callback(items);
     }
