@@ -54,6 +54,12 @@ img {
     #rightnav, #rightbutton, #bluerightbutton {
         top: 4px;
     }
+    .searchbox form {
+        width: 260px;
+    }
+    .searchbox input[type="text"] {
+        width: 250px;
+    }
 }
 
 @media screen and (min-width: 321px)
@@ -94,8 +100,44 @@ img {
     #rightnav, #rightbutton, #bluerightbutton {
         top: 4px;
     }
+    .searchbox form {
+        width: 432px;
+    }
+    .searchbox input[type="text"] {
+        width: 435px;
+    }
 }
-
+.searchbox {
+    height: 44px;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f1f3f4), color-stop(3%, #e0e4e7), color-stop(50%, #c7cfd4), color-stop(51%, #bec7cd), color-stop(97%, #b4bec6), to(#8999a5));
+    margin: -13px 0 13px 0;
+    width: 100%;
+}
+.searchbox form {
+    height: 24px;
+    -webkit-border-image: url('../img/searchfield.png') 4 14 1 24;
+    border-width: 4px 14px 1px 24px;
+    display: block;
+    position: relative;
+    top: 8px;
+    margin: auto;
+}
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+.searchbox input[type="text"] {
+    border: 0;
+    -webkit-appearance: none;
+    height: 18px;
+    float: left;
+    font-size: 13px;
+    padding: 0;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
 #leftnav, #leftbutton, #rightnav, #rightbutton, #blueleftbutton, #bluerightbutton {
     z-index: 5000;
 }
