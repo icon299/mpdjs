@@ -40,9 +40,11 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
-          // var ts = Date.now();
-          // console.log('start insert base', Math.floor(ts/1000));
-        insertArtistData(1, function(rcount){
+          var ts = Date.now();
+          debug('start insert base', Math.floor(ts/1000));
+        insertArtistData(1, function(endTime){
+          
+          debug('end insert base', Math.floor(endTime/1000));
           
         })
 
@@ -187,7 +189,7 @@ function insertArtistData(clear, callback) {
           console.log(err)
         } else {
           searchResult = mpd.parseArrayMessage(msg)
-           debug("======== FIND ========", item.Album, item.Artist, searchResult)
+           //debug("======== FIND ========", item.Album, item.Artist, searchResult)
            var song_count = 0;
             for (var i = 0; i < searchResult.length; i++) {
                 
@@ -196,7 +198,7 @@ function insertArtistData(clear, callback) {
                 if (searchResult[i].hasOwnProperty('file')) {
                     song_count ++
                     if (song_count == 1) {
-                    // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
+                     // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
                       var albumDir = path.dirname(searchResult[i].file)
                       var obj = 
                         { 
@@ -225,7 +227,7 @@ function insertArtistData(clear, callback) {
         }
       })
     })
-    callback(data.length)
+    callback(Date.now())
   })
   })
 
@@ -456,8 +458,12 @@ function testCommandMPD(command, param, callback) {
     else var arg = [];
     switch(command) {
       case 'list artist':
+      case 'list artist album':
+        d = ["Artist"]
+        break;
       case 'list album':
-        d = []
+      case 'list album artist':
+        d = ["Album"]  
         break;
     }
 
@@ -466,7 +472,7 @@ function testCommandMPD(command, param, callback) {
                 callback(err);
             } else {
                 var msg = parseMpdOutput(msg,d);
-                 //var msg = mpd.parseArrayMessage(msg);
+                
                 msg = JSON.stringify(msg);
                 // console.log(msg)
                 callback(null, msg)
@@ -806,14 +812,14 @@ function parseMpdOutput (msg, delimiters ) {
       if ((delimiters.indexOf(keyValue[1]) >= 0) || (delimiters.length == 0)) {
         debug("delim now", keyValue[1])
         results.push(obj)
-        console.log('push delim')
+        // console.log('push delim')
         obj = {}
       } 
     } 
     obj[keyValue[1]] = keyValue[2]
   })
   results.push(obj)
-  console.log('push end')
+  // console.log('push end')
   return results;
 }
 
