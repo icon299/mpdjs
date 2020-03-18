@@ -94,7 +94,7 @@ router.get('/mb', function (req,res){
 
   currDir = typeof currDir !== 'undefined' ? currDir : '/';
   param = typeof param !== 'undefined' ? param : 'all';
-  console.log("CurrDir: ", currDir)
+  // console.log("CurrDir: ", currDir)
 
   mpdClient.getDirList(currDir, param, function (err, dirInfo, item){
     res.render('getdir',{item});

@@ -41,11 +41,12 @@ function connect() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
           var ts = Date.now();
-          debug('start insert base', Math.floor(ts/1000));
-        insertArtistData(1, function(endTime){
+          // debug('start insert base', Math.floor(ts/1000));
+          console.time('doBase');
+         insertArtistData(1, function(endTime){
           
-          debug('end insert base', Math.floor(endTime/1000));
-          
+          // debug('end insert base', Math.floor(endTime/1000));
+          console.timeEnd('doBase')
         })
 
         // fileclient.searchCover('D:/mpd/music',function(err, files){
@@ -179,7 +180,7 @@ function insertArtistData(clear, callback) {
     }
   
   mpdGetArtistsAlbums(function(err, data){
-     debug('+++++++++++++ ArtistsAlbums ++++++++++\n', data)
+     // debug('+++++++++++++ ArtistsAlbums ++++++++++\n', data)
     var searchResult = [];
     //var obj = {}
 
@@ -220,6 +221,8 @@ function insertArtistData(clear, callback) {
                       if (err) {
                         console.log(err)
                       } else {
+
+                        //debug('end insert record', Math.floor(Date.now()/1000));
                         //debug('+++++++++ inserting ++++++++++++\n', newData)
                       }
                     })                
@@ -228,6 +231,7 @@ function insertArtistData(clear, callback) {
       })
     })
     callback(Date.now())
+
   })
   })
 
@@ -432,9 +436,11 @@ debug('url = ',url)
 //     var data = fs.readFileSync("lsinfo.txt", "utf8");
 //     console.log(data);  // выводим считанные данные
 // });
-                var dirContent = parseLsinfoMessage(msg, param);
+                 var dirContent = parseLsinfoMessage(msg, param);
+               // var dirContent = parseMpdOutput(msg, ['file','directory','playlist'])
                 var dirInfo = {};
                 dirInfo.dir = url;
+                // debug("dircontent",dirContent)
                 callback( null, dirInfo, dirContent);
             }
         });
@@ -601,7 +607,7 @@ function getAlbumsForArtist (artist, callback){
         obj = Object.assign(artistAlbums[i],artist)
         albumArtist.push(obj)
       }
-      debug('getAlbumsForArtist', albumArtist)
+      // debug('getAlbumsForArtist', albumArtist)
       callback(null, albumArtist)
     }
   })
@@ -678,7 +684,7 @@ function parseLsinfoMessage(msg, param) {
                 if (Object.keys(obj).length > 0)
                     results.push(obj);
                 var pathparse = path.parse(keyValue[2])
-                console.log('parseDir:', keyValue[2])
+                // console.log('parseDir:', keyValue[2])
                 obj = {};
                 obj.type = keyValue[1]
                 obj.path = keyValue[2]
@@ -689,7 +695,7 @@ function parseLsinfoMessage(msg, param) {
             }
         });
         results.push(obj);
-        console.log('parseDir:', obj)
+        // console.log('parseDir:', obj)
     return results;
 }
 
@@ -961,7 +967,7 @@ var self = module.exports = {
         testCommandMPD(cmd, arg, callback)
     },
     playDir: function playDir(url, callback) {
-        debug ("playDir Func ")
+        debug ("playDir addToQueue ")
         addToQuenue(url, callback)
     },
     nextsong: function nextsong(callback) {
