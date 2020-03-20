@@ -40,11 +40,11 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
-          var ts = Date.now();
+          // var ts = Date.now();
           // debug('start insert base', Math.floor(ts/1000));
           console.time('doBase');
-         insertArtistData(1, function(endTime){
-          
+         insertArtistData(1, function(err){
+          // console.log('Inserting', song_count,'record')
           // debug('end insert base', Math.floor(endTime/1000));
           console.timeEnd('doBase')
         })
@@ -163,6 +163,7 @@ function sendCommands(commands, callback) {
 }
 
 function insertArtistData(clear, callback) {
+  // var artistData = []
   libdb.connect(function(err, count){
     if (err) {
       console.log(err)
@@ -209,6 +210,7 @@ function insertArtistData(clear, callback) {
                         
                         // file: searchResult[i].file
                         }
+                      // artistData.push(obj)
                     }
 
                 }
@@ -230,7 +232,7 @@ function insertArtistData(clear, callback) {
         }
       })
     })
-    callback(Date.now())
+    callback(err)
 
   })
   })
