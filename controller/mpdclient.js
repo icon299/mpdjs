@@ -8,6 +8,8 @@ var fileclient = require('./fileclient.js')
 var libdb = require('./libdb.js')
 var path = require('path');
 
+const promise = require('bluebird');
+
 // Private
 var mpdClient = null;
 var mpdOptions = null;
@@ -32,6 +34,7 @@ function connect() {
     mpdStatus = Status.connecting;
     debug('Connecting');
     mpdOptions.host = '127.0.0.1';
+
     mpdClient = mpd.connect(mpdOptions);
     fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
         console.log(data)
@@ -40,14 +43,11 @@ function connect() {
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
-          // var ts = Date.now();
-          // debug('start insert base', Math.floor(ts/1000));
-          console.time('doBase');
-         insertArtistData(1, function(err){
-          // console.log('Inserting', song_count,'record')
-          // debug('end insert base', Math.floor(endTime/1000));
-          console.timeEnd('doBase')
+        console.time('doBase');
+        insertArtistData(1, function(err){
+        console.timeEnd('doBase')
         })
+
 
         // fileclient.searchCover('D:/mpd/music',function(err, files){
         //   console.log(files);
@@ -399,7 +399,6 @@ function getPlaylistSongs(playlist,callback){
         });
 };
 
-
 function sendElapsedRequest(callback) {
     sendCommands(cmd("status", []),
         function(err, msg) {
@@ -438,11 +437,9 @@ debug('url = ',url)
 //     var data = fs.readFileSync("lsinfo.txt", "utf8");
 //     console.log(data);  // выводим считанные данные
 // });
-                 var dirContent = parseLsinfoMessage(msg, param);
-               // var dirContent = parseMpdOutput(msg, ['file','directory','playlist'])
+                var dirContent = parseLsinfoMessage(msg, param);
                 var dirInfo = {};
                 dirInfo.dir = url;
-                // debug("dircontent",dirContent)
                 callback( null, dirInfo, dirContent);
             }
         });
@@ -520,6 +517,16 @@ function doPrev(callback){
                 callback(null)
             }
         });
+}
+
+function mpdShuffle(callback) {
+    sendCommands(cmd("shuffle",[]), function(err){
+        if(err) {
+            callback(err);
+        } else {
+            callback(null)
+        }
+    })
 }
 
 function playSongId(id, callback) {
@@ -658,16 +665,6 @@ function mpdGetArtists(callback) {
         callback(null, artistsArray)
     }
   });
-}
-
-function mpdShuffle(callback) {
-	sendCommands(cmd("shuffle",[]), function(err){
-		if(err) {
-			callback(err);
-		} else {
-			callback(null)
-		}
-	})
 }
 
 function parseLsinfoMessage(msg, param) {

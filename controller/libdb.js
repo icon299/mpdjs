@@ -2,9 +2,12 @@
 var path = require('path');
 var debug = require('debug')('mpd.fm:libdb');
 var neDB = require('nedb');
+
 var dbLib = path.join(__dirname, '../data/dblib.db');
+
 //var libdb = new neDB();
 var db = new neDB(dbLib);
+
 
 function connect(callback) {
   db.loadDatabase(function (err) {
@@ -100,7 +103,6 @@ var self = module.exports = {
     },
     selectAlbum: function selectAlbum(what,a, callback) {
       doSelectAlbum(what,a, callback)
-    }
-
+    },
 }
 
