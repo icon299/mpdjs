@@ -229,12 +229,22 @@ module.exports = {
                         })
                         break;
                     case "ADDTOQUENUE":
+
                         mpdClient.playDir(msg.data.url, function(err){
                             if(err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');
                             }
                         })
                         break;
+                    case "ADDALBUMTOQUEUE":
+                        console.log("ADDALBUMTOQUEUE",msg.data.album)
+                        mpdClient.doAddAlbumToQueue(msg.data.album, msg.data.clear, function(err){
+                            if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            }
+                        })
+                        break;
+
                     case "NEXT":
                         mpdClient.nextsong(function(err){
                           if(err) {

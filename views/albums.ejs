@@ -29,7 +29,7 @@
       <% item.forEach(function(item){ %>
         <li>
           <img class="image" src="/img/playlist.png" alt="item.station">
-          <div onclick="getPage('/radio')">
+          <div onclick="onAddAlbumToQueue('<%=item.Album%>',1)">
             <span class="name"><%=item.Album%></span>
             <span class="comment"><%=item.Artist%></span>
             <span class="arrow"></span> 

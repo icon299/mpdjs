@@ -257,6 +257,12 @@ function app() {
         sendWSSMessage('ADDTOQUENUE', {url: url})
     };
 
+    onAddAlbumToQueue = function(album,clear) {
+        console.log("onAddAlbumToQueue", album)
+        setDefaultStatus();
+        sendWSSMessage('ADDALBUMTOQUEUE', {album: album, clear: clear})  
+    }
+
     onRemoveFromQueue = function(songId) {
         sendWSSMessage('REMOVE_FROM_QUEUE', songId)
     }

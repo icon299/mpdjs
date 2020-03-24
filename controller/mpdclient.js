@@ -497,6 +497,34 @@ function addToQuenue(url, callback) {
     });
 }
 
+function doClearQueue() {
+  sendCommands(cmd("clear", []),
+    function(err, msg) {
+      if (err) {
+        callback(err);
+      }
+  })
+}
+
+function addAlbumToQueue(album, clearQueue, callback) {
+  var songList;
+  sendCommands(cmd("find album",[album]), function(err, msg){
+    if (err) {
+      callback(err)
+    } else {
+      songList = parseMpdOutput(msg,'file')
+      songList.forEach(function(item, index, array) {
+      sendCommands(cmd("add", [item.file]),
+        function(err, msg) {
+          if (err) {
+            callback(err);
+          }
+        })
+      })
+    }
+  })
+}
+
 function doNext(callback){
     debug('next')
     sendCommands(cmd("next", []), function(err) {
@@ -810,7 +838,7 @@ function parseMpdOutput (msg, delimiters ) {
     }
 
     keyValue[1].toLowerCase();
-    debug("keyValue", keyValue[1])
+    // debug("keyValue", keyValue[1])
     
     if (Object.keys(obj).length > 0) {
       
@@ -1013,5 +1041,8 @@ var self = module.exports = {
     },
     doReadDir: function doReadDir(path,callback) {
         readDir(path,callback)
+    },
+    doAddAlbumToQueue: function doAddAlbumToQueue(album, clearQueue, callback) {
+        addAlbumToQueue(album, clearQueue, callback)
     }
 };
