@@ -80,6 +80,11 @@
     }
 
 }
+@media only screen and (max-width: 480px) {
+.pure-form button[type=submit] {
+     margin: 0 
+}
+
 .pure-menu-link {
     color: #FFF;
 }

@@ -1,5 +1,5 @@
 <% include ./header.ejs %>
-
+<link href="css/modal.css" rel="stylesheet" type="text/css"/>
 <body>
   <div id="topbar">
     <div id="leftnav">
@@ -23,17 +23,18 @@
 </div>
 
   <% if (item !== undefined) { %>
-  <div class="applist">
+  <div class="applist" id="queueList">
     <div id="content">
-      <ul id="aList">
+      <ul >
       <% item.forEach(function(item){ %>
-        <li>
+        <li id="currentAlbum">
           <img class="image" src="/img/playlist.png" alt="item.station">
-          <div onclick="onAddAlbumToQueue('<%=item.Album%>',1)">
+          
             <span class="name"><%=item.Album%></span>
             <span class="comment"><%=item.Artist%></span>
-            <span class="arrow"></span> 
-          </div>
+          
+            <a href="javascript:void(0);" name="sdsdsa" class="edit" data-_id="<%=item.Album %>" data-toggle="modal" data-target="#myModalAdd"><span class="arrow"></span></a>
+          <!-- </div> -->
         </li>
       <% }) %>
         <li class="hide" style="border:none">
@@ -46,23 +47,94 @@
   <% include ./player.ejs %>
   <% } %>
 
+  <div  class="modal" id="ModalOpt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm">
+     <div class="modal-content">
+      <div class="modal-body">
+      <div class="list">
+        <div id="content">
+          <ul>
+            
+            <li id="addToQueue" data-dismiss="modal">
+              <div >
+                <span class="name">Add to queue</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          
+            <li id="clearAndAdd" data-dismiss="modal">
+              <div >
+                <span class="name">Clear and Add</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+            <li id="addAndPlay" data-dismiss="modal">
+              <div >
+                <span class="name">Add and Play</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+
   <% include ./footer.ejs %>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/modal.min.js"></script>
+<!-- <script src="js/bootstrap-transition.js"></script> -->
+
+<!-- <script src="js/b-modal.js"></script> -->
+<script>
+$(document).ready(function(){
+
+    var alb = '';
+
+    $('#queueList').on('click','.edit',function(){
+      alb = $(this)
+      $('#ModalOpt').modal('show');
+    });
+
+    $("#addToQueue").click (function(){
+        
+        // console.log("addToQueue", alb.data('_id'))
+        onAddAlbumToQueue(alb.data('_id'),0)
+         // $('#ModalOpt').modal('hide');
+    })
+
+    $("#clearAndAdd").on('click', function(){
+      // console.log("clearAndAdd:", alb.data('_id'))
+         onAddAlbumToQueue(alb.data('_id'),1)
+          // $('#ModalOpt').modal('hide');
+    })
+        $("#addAndPlay").on('click', function(){
+      
+           onAddAlbumToQueue(alb.data('_id'),0)
+       })
+
+})  
+
+</script>
 <script>
 function searchLib() {
   // Declare variables
   var input, filter, ul, li, a, i, txtValue;
   input = document.getElementById('search');
   filter = input.value.toUpperCase();
-  ul = document.getElementById("aList");
+  ul = document.getElementById("queueList");
   li = ul.getElementsByTagName('li');
-  console.log(li)
+  // console.log(li)
 
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < li.length; i++) {
     a = li[i].getElementsByTagName("span")[0];
     if (a !== undefined) {
       txtValue = a.textContent || a.innerText;
-    console.log(txtValue)
+    // console.log(txtValue)
     if (txtValue.toUpperCase().indexOf(filter) > -1) {
       li[i].style.display = "";
     } else {
@@ -72,5 +144,6 @@ function searchLib() {
   }
 }
 </script>
+
 </body>
 </html>

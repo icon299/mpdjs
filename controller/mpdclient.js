@@ -1,6 +1,7 @@
 "use strict";
 
-var mpd = require('mpd');
+// const promise = require('bluebird');
+var mpd = (require('mpd'));
 var cmd = mpd.cmd;
 var debug = require('debug')('mpd.fm:mpdclient');
 var fs = require('fs');
@@ -8,7 +9,7 @@ var fileclient = require('./fileclient.js')
 var libdb = require('./libdb.js')
 var path = require('path');
 
-const promise = require('bluebird');
+
 
 // Private
 var mpdClient = null;
@@ -497,30 +498,54 @@ function addToQuenue(url, callback) {
     });
 }
 
-function doClearQueue() {
+function doClearQueue(callback) {
   sendCommands(cmd("clear", []),
     function(err, msg) {
       if (err) {
         callback(err);
+      } else {
+        debug("doClear")
+        callback(null)
       }
   })
 }
 
-function addAlbumToQueue(album, clearQueue, callback) {
-  var songList;
+function queueadd(fileList) {
+  fileList.forEach( function(item, index, array) {
+    sendCommands([cmd("addid", [item.file])],
+        function(err, msg) {
+          if (err) {
+            //callback(err);
+          } else {
+            debug("SONG_ID", msg)
+          }
+    })
+  })
+
+}
+
+function addAlbumFilesToQueue(album, clearQueue, callback) {
+  // var songList;
+  debug("ALBUM:", album, "CLEAR:", clearQueue)
   sendCommands(cmd("find album",[album]), function(err, msg){
     if (err) {
       callback(err)
     } else {
-      songList = parseMpdOutput(msg,'file')
-      songList.forEach(function(item, index, array) {
-      sendCommands(cmd("add", [item.file]),
-        function(err, msg) {
+      var songList = parseMpdOutput(msg,'file')
+      if (clearQueue) {
+        doClearQueue(function(err){
           if (err) {
-            callback(err);
+            console.log(err)
+          } else {
+            debug("songList", songList)
+            queueadd(songList)
           }
+
         })
-      })
+      } else {
+        queueadd(songList)
+      }
+    
     }
   })
 }
@@ -843,7 +868,7 @@ function parseMpdOutput (msg, delimiters ) {
     if (Object.keys(obj).length > 0) {
       
       if ((delimiters.indexOf(keyValue[1]) >= 0) || (delimiters.length == 0)) {
-        debug("delim now", keyValue[1])
+        // debug("delim now", keyValue[1])
         results.push(obj)
         // console.log('push delim')
         obj = {}
@@ -919,6 +944,15 @@ function readDir(path, callback) {
     })
 }
 
+function AddToFavorites(){
+  sendCommands(cmd("currentsong", []), function(err, msg){
+    if (err) {
+      console.log(err)
+    } else {
+      console.log("Add to Favorites", msg)
+    }
+  })
+}
 
 
 var self = module.exports = {
@@ -1042,7 +1076,10 @@ var self = module.exports = {
     doReadDir: function doReadDir(path,callback) {
         readDir(path,callback)
     },
-    doAddAlbumToQueue: function doAddAlbumToQueue(album, clearQueue, callback) {
-        addAlbumToQueue(album, clearQueue, callback)
+    doAddAlbumFToQueue: function doAddAlbumsToQueue(album, clearQueue, callback) {
+        addAlbumFilesToQueue(album, clearQueue, callback)
+    },
+    doAddToFavorites: function doAddToFavorites() {
+      AddToFavorites()
     }
 };

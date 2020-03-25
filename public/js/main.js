@@ -139,6 +139,10 @@ function app() {
                 case "ERROR":
                     showError(msg.data);
                     break;
+                case "INFO_MSG":
+                    //showError(msg.data);
+                    console.log("INFO_MSG", msg.data)
+                    break;                    
                 case "UPDATE_DB":
                     document.getElementById('db_update').innerHTML = 'updating_db: ' + msg.data;
                     sendWSSMessage('REQUEST_STATS', null);
@@ -258,13 +262,17 @@ function app() {
     };
 
     onAddAlbumToQueue = function(album,clear) {
-        console.log("onAddAlbumToQueue", album)
-        setDefaultStatus();
+        // console.log("onAddAlbumToQueue", album, clear)
+        // setDefaultStatus();
         sendWSSMessage('ADDALBUMTOQUEUE', {album: album, clear: clear})  
     }
 
     onRemoveFromQueue = function(songId) {
         sendWSSMessage('REMOVE_FROM_QUEUE', songId)
+    }
+    onAddToFavorites = function() {
+        console.log("data.currentStation", data.currentStation)
+        sendWSSMessage('ADD_TO_FAVORITES')
     }
 
     updateDB = function() {

@@ -238,11 +238,17 @@ module.exports = {
                         break;
                     case "ADDALBUMTOQUEUE":
                         console.log("ADDALBUMTOQUEUE",msg.data.album)
-                        mpdClient.doAddAlbumToQueue(msg.data.album, msg.data.clear, function(err){
+                        mpdClient.doAddAlbumFToQueue(msg.data.album, msg.data.clear, function(err,album){
                             if(err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws, 'INFO_MSG', album)
                             }
                         })
+                        break;
+                    case "ADD_TO_FAVORITES":
+                        console.log('ADD_TO_FAVORITES MESSAGES')
+                        mpdClient.doAddToFavorites();
                         break;
 
                     case "NEXT":
