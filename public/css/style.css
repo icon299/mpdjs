@@ -271,6 +271,16 @@ fieldset {
     background: url("../img/arrow.png") 0 0 no-repeat;
 }
 
+.list .navicon {
+    position: absolute;
+    width: 8px!important;
+    height: 13px!important;
+    right: 10px;
+    top: 11px;
+    margin: 0!important;
+    background: url("../img/navicon.png") 0 0 no-repeat;
+}
+
 .list .value {
     float: right;
     display: block;
@@ -679,6 +689,16 @@ padding-top: 18px;
     top: 26px;
     margin: 0!important;
     background: url("../img/arrow.png") 0 0 no-repeat;
+}
+
+.applist .navicon {
+    position: absolute;
+    width: 32px!important;
+    height: 32px!important;
+    right: 10px;
+    top: 16px;
+    margin: 0!important;
+    background: url("../img/navicon.png") 0 0 no-repeat;
 }
 
 .message{

@@ -191,6 +191,11 @@
 
 }
 
+#content {
+  min-height: 0px;
+margin-top: 0px;
+}
+
 @media (min-width: 992px) {
   .modal-lg {
     max-width: 800px;

@@ -242,7 +242,17 @@ module.exports = {
                             if(err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');
                             } else {
-                                sendWSSMessage(ws, 'INFO_MSG', album)
+                                sendWSSMessage(ws, 'INFO_MSG', msg.data.album)
+                            }
+                        })
+                        break;
+                    case "ADD_FOLDER_TO_QUEUE":
+                        console.log("ADD_FOLDER_TO_QUEUE", msg.data.folder)
+                        mpdClient.doAddFolderToQueue(msg.data.folder, msg.data.clear, function(err,album){
+                            if(err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws, 'INFO_MSG', msg.data.folder)
                             }
                         })
                         break;

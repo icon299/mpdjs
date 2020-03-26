@@ -266,6 +266,11 @@ function app() {
         // setDefaultStatus();
         sendWSSMessage('ADDALBUMTOQUEUE', {album: album, clear: clear})  
     }
+    onAddFolderToQueue = function(folder, clear) {
+        // console.log("onAddAlbumToQueue", album, clear)
+        // setDefaultStatus();
+        sendWSSMessage('ADD_FOLDER_TO_QUEUE', {folder: folder, clear: clear})  
+    }
 
     onRemoveFromQueue = function(songId) {
         sendWSSMessage('REMOVE_FROM_QUEUE', songId)

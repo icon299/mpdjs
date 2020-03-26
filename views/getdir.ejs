@@ -1,5 +1,5 @@
 <% include ./header.ejs %>
-
+<link href="css/modal.css" rel="stylesheet" type="text/css"/>
 <body>
   <div id="topbar">
     <div id="title">Folders</div>
@@ -16,8 +16,10 @@
 
 <% include ./error-log-msg.ejs %>
 
+
+
   <% if (item) { %>
-  <div class="applist">
+  <div class="applist" id="queueList">
     <div id="content">
       <ul>
       <% item.forEach(function(item){ %>
@@ -29,9 +31,10 @@
           <span>
             <span class="dirname"><%= item.name%></span>
             <!-- <span class = "comment"></span> -->
-            <span class="arrow" onclick='onAddToQuenue("<%=item.path%>")'>
+            <a href="javascript:void(0);" class="edit" data-_id="<%=item.path %>" data-toggle="modal" data-target="#myModalAdd"><span class="navicon">
+            <!-- <span class="arrow edit" onclick='onAddToQuenue("<%=item.path%>")'> -->
             <!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->
-            </span>
+            </span></a>
           </span>
         <%}%>
         <% if (item.type == 'file') { %>
@@ -40,9 +43,9 @@
           <div>
             <span class="dirname"><%= item.name%></span>
             <!-- <span class = "comment"></span> -->
-            <span class="arrow" onclick='onAddToQuenue("<%=item.path%>")'>
+            <a href="javascript:void(0);" class="edit" data-_id="<%=item.path %>" data-toggle="modal" data-target="#myModalAdd"><span class="navicon">
             <!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->
-            </span>
+            </span></a>
           </div>
         </li>
         <%}%>
@@ -56,6 +59,92 @@
 
   <% include ./player.ejs %>
   <% } %>
+<div  class="modal" id="ModalOpt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm">
+     <div class="modal-content">
+      <div class="modal-body">
+<!--         <div class="list">
+          <ul>
+            <li class="withimage">
+              <span >
+            <img class= "image" src="/img/folder.png" alt="">
+          </span>
+          <span class="dirname" id="modal-title" data_dirname="<%= item.name%>"></span>
+            </li>
+          </ul>
+        </div>
+ -->      <div class="list">
+        <div id="content">
+          <ul>
+            
+            <li id="replase" data-dismiss="modal">
+              <div >
+                <span class="name">Replase</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          
+            <li id="addNext" data-dismiss="modal">
+              <div >
+                <span class="name">Add Next</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+            <li id="addAndPlay" data-dismiss="modal">
+              <div >
+                <span class="name">Add Next and Play</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          </ul>
+<!--           <div class="center">
+                <span data-dismiss="modal" >Cancel</span>
+          </div>    -->             
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>  
   <% include ./footer.ejs %>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/modal.min.js"></script>
+<!-- <script src="js/b-modal.js"></script> -->
+
+<!-- <script src="js/bootstrap-transition.js"></script> -->
+<script>
+$(document).ready(function(){
+
+    var folder = '';
+
+    $('#queueList').on('click','.edit',function(){
+      folder = $(this);
+      // var modal_title = $(this).data('_id');
+      $('#ModalOpt').modal('show');
+      // console.log("modal-title:",modal_title);
+      // $('#modal-title').html = modal_title;
+      // $('#modal-title').html(modal_title);
+    });
+
+    $("#replase").click (function(){
+        
+        // console.log("addToQueue", alb.data('_id'))
+        onAddToQuenue(folder.data('_id'))
+         // $('#ModalOpt').modal('hide');
+    })
+
+    $("#addNext").on('click', function(){
+      // console.log("clearAndAdd:", alb.data('_id'))
+         onAddFolderToQueue(folder.data('_id'),0)
+          // $('#ModalOpt').modal('hide');
+    })
+        $("#addAndPlay").on('click', function(){
+      
+           onAddToQuenue(folder.data('_id'))
+       })
+
+})  
+
+</script>  
 </body>
 </html>

@@ -24,6 +24,7 @@ var broadcastDbUpdate = [];
 var mpdUpdateDB = 0;
 var mpdMusicBase = '';
 var mpdStatusOptions = {"repeat":0,"random":0,"single":0,"consume":0};
+var mpdNow = []
 
 function connect() {
     // End existing session, if any
@@ -180,7 +181,7 @@ function insertArtistData(clear, callback) {
         })
       }
     }
-  
+  // })
   mpdGetArtistsAlbums(function(err, data){
      // debug('+++++++++++++ ArtistsAlbums ++++++++++\n', data)
     var searchResult = [];
@@ -193,51 +194,44 @@ function insertArtistData(clear, callback) {
         } else {
           searchResult = mpd.parseArrayMessage(msg)
            //debug("======== FIND ========", item.Album, item.Artist, searchResult)
-           var song_count = 0;
-            for (var i = 0; i < searchResult.length; i++) {
-                
-              
-              if (searchResult[i].Artist == item.Artist) {
-                if (searchResult[i].hasOwnProperty('file')) {
-                    song_count ++
-                    if (song_count == 1) {
-                     // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
-                      var albumDir = path.dirname(searchResult[i].file)
-                      var obj = 
-                        { 
-                          Artist:searchResult[i].Artist,
-                          Album:searchResult[i].Album,
-                          path: albumDir,
+          var song_count = 0;
+          for (var i = 0; i < searchResult.length; i++) {
+            if (searchResult[i].Artist == item.Artist) {
+              if (searchResult[i].hasOwnProperty('file')) {
+                song_count ++
+                if (song_count == 1) {
+                 // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
+                  var albumDir = path.dirname(searchResult[i].file)
+                  var obj = { 
+                    Artist:searchResult[i].Artist,
+                    Album:searchResult[i].Album,
+                    path: albumDir,
                         
                         // file: searchResult[i].file
-                        }
+                  }
                       // artistData.push(obj)
-                    }
-
                 }
-                // break;
               }
+                // break;
             }
-            obj.song_count = song_count;
-                    libdb.insert(obj, function(err, newData){
-                        // debug('ITEM: ', item)
-                      if (err) {
-                        console.log(err)
-                      } else {
+          }
+          obj.song_count = song_count;
+          libdb.insert(obj, function(err, newData){
+            // debug('ITEM: ', item)
+            if (err) {
+              console.log(err)
+            } else {
 
                         //debug('end insert record', Math.floor(Date.now()/1000));
                         //debug('+++++++++ inserting ++++++++++++\n', newData)
-                      }
-                    })                
-
+            }
+          })                
         }
       })
     })
-    callback(err)
-
+     // callback(err)
+    })
   })
-  })
-
 }
 
 function sendStatusRequest(callback) {
@@ -247,12 +241,15 @@ function sendStatusRequest(callback) {
                 callback(err);
             } else {
                 var status = mpd.parseKeyValueMessage(msg);
+                mpdNow = status;
                 //var mpdStatusOptions = {"repeat":0,"random":0,"single":0,"consume":0,"state":"stop"};
                 mpdStatusOptions.repeat = status.repeat;
                 mpdStatusOptions.random = status.random;
                 mpdStatusOptions.single = status.single;
                 mpdStatusOptions.consume = status.consume;
-                //console.log("mpdOptions_st: ", mpdStatusOptions)
+                mpdStatusOptions.currentsong = mpdNow.songid
+
+                console.log("mpdOptions_st: ", mpdStatusOptions.currentsong)
                 callback(null, status);
             }
     });
@@ -515,13 +512,36 @@ function queueadd(fileList) {
     sendCommands([cmd("addid", [item.file])],
         function(err, msg) {
           if (err) {
-            //callback(err);
+            callback(err);
           } else {
             debug("SONG_ID", msg)
           }
     })
   })
 
+}
+function addFolderToQueue(folder, clearQueue, callback) {
+  debug("FOLDER:", folder, "CLEAR:", clearQueue)
+  
+  if (clearQueue) {
+    sendCommands([cmd('clear',[]),cmd('add',[folder])], function(err, msg) {
+      if (err) {
+        callback(err)
+      } else {
+        debug("replase")
+        callback(null, msg)
+      }
+    }) 
+  } else {
+    sendCommands(cmd("add",[folder]), function(err, msg) {
+      if (err) {
+        callback(err)
+      } else {
+        callback(null, msg)
+      }
+    })     
+  }
+    
 }
 
 function addAlbumFilesToQueue(album, clearQueue, callback) {
@@ -937,10 +957,7 @@ function readDir(path, callback) {
             findCoverImage(item, function(a){
                 callback(a)
             })
-
         }
-
-
     })
 }
 
@@ -1081,5 +1098,8 @@ var self = module.exports = {
     },
     doAddToFavorites: function doAddToFavorites() {
       AddToFavorites()
+    },
+    doAddFolderToQueue: function doAddFolderToQueue(folder, clearQueue, callback) {
+      addFolderToQueue(folder, clearQueue, callback)
     }
 };
