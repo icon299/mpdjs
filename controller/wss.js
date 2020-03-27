@@ -344,7 +344,16 @@ module.exports = {
                                 sendWSSMessage(ws,'MPD_OPTION', msg.data)
                             }
                         })
-                    break;
+                        break
+                    case "SEEK_CUR":
+                        mpdClient.doSeekCur(msg.data, function(err, msg){
+                            if (err) {
+                                sendWSSMessage(ws, 'MPD_OFFLINE');
+                            } else {
+                                sendWSSMessage(ws, 'SEEK_CUR_DONE', msg);
+                            }
+                        })
+                        break;
 
                 }
             });

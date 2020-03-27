@@ -394,6 +394,7 @@ function app() {
         var found = false;
         if(!isNaN(msg.time))
         setDOMelementInnerHtml('duration', ' ('+ convertTime(msg.time)+')')
+        setDOMelementInnerHtml('duration', convertTime(msg.time))
         setQueueCurrentSong(msg.id);
         data.stationList.forEach(function(stationData) {
             if(stationData.stream === msg.file) {
