@@ -189,7 +189,7 @@ color: #AAA;
   function seek(event){
       if(seeking){
         newPos = event.clientX - progressDiv.offsetLeft;
-        seekto = Math.floor(data.duration * (newPos/270))
+        seekto = Math.floor(data.duration * (newPos/progressDiv.style.width))
         console.log(seekto)
         // setDOMelementStyle('myBar', 'width:'+ newPos + 'px' )
         sendWSSMessage("SEEK_CUR", seekto);
