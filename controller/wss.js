@@ -346,6 +346,7 @@ module.exports = {
                         })
                         break
                     case "SEEK_CUR":
+                        // console.log("SEEK_CUR", msg.data)
                         mpdClient.doSeekCur(msg.data, function(err, msg){
                             if (err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');

@@ -35,7 +35,7 @@
 }
 
 #myBar {
-  width: 24%;
+  width: 0;
   height: 2px;
   background-color: rgb(73,102,145);
   /*background-color: #932cc9;*/
@@ -48,7 +48,8 @@
     border-radius: 50%;
     position: relative;
     top: -4px;
-    margin-left: 24%;
+    margin-left: 0;
+    /*float: right;*/
 }
 .progressDiv #elapsed {
 display: block;
@@ -93,22 +94,24 @@ color: #AAA;
   <div class="homelist">
     <div id="content">
       <div id="player-home" class = "center">
-        <div class="pure-u-1-1">
+        <div>
           <div class="cover">
             <img src="img\station_logo\empty.png" alt="" class="home-image" id="station_logo">
           </div>
         </div>
-        <div class="progressDiv center">
+        <div class="progressDiv center" id="progressDiv">
           <div id="myProgress" >
             <div id="myBar"></div>
 
           <!-- <input id="seekslider" type="range" min="0" max="100" value="0" step="1"> -->
           </div>
-          <div class="dot"></div>
-          <span id="elapsed">0:00</span>
-          <span id="duration">6:05</span>
+          <div class="dot" id="dot"></div>
+          <div>
+          <span id="elapsed"></span>
+          <span id="duration"></span>
+          </div>
         </div>
-        <div class="pure-u-1">
+        <div>
           <div class="song-info-text">
             <p class="info-heading header" id="station"></p>
             <p class="info-track clip" id="song"></p>
@@ -167,10 +170,33 @@ color: #AAA;
       </div>
     </div>
   </div>
-
+<!-- <script src="js/jquery-3.3.1.min.js"></script> -->
 <% include ./footer.ejs %>
 
+
 <script>
+  var seeking;
+  var newPos;
+  var seekto;
+  var progressDiv = document.getElementById("progressDiv");
+  progressDiv.addEventListener("mousedown", function(event){ 
+    seeking=true; 
+    seek(event); 
+    console.log("mouse")
+  });
+  // progressDiv.addEventListener("mousemove", function(event){ seeking=true; }); 
+  progressDiv.addEventListener("mouseup",function(event){ seeking=false; });  
+  function seek(event){
+      if(seeking){
+        newPos = event.clientX - progressDiv.offsetLeft;
+        seekto = Math.floor(data.duration * (newPos/270))
+        console.log(seekto)
+        // setDOMelementStyle('myBar', 'width:'+ newPos + 'px' )
+        sendWSSMessage("SEEK_CUR", seekto);
+          //seekto = audio.duration * (seekslider.value / 100);
+          //audio.currentTime = seekto;
+      }
+    }      
   
 </script>
 </body>

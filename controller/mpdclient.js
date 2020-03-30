@@ -981,6 +981,7 @@ function AddToFavorites(){
 }
 
 function seekCur(goTime, callback) {
+  
   sendCommands(cmd("seekcur",[goTime]), function(err, msg){
     if (err) {
       callback(err)

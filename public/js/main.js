@@ -1,7 +1,7 @@
 //"use strict";
 
 var socket = null;
-const DefaultSongText = ' *** ';
+const DefaultSongText = ' **** ';
 const DefaultMpdErrorText = 'Trying to reconnect...';
 const ErrorWssConnectText = 'Can\'t reach server - trying to reconnect...'
 //const DefaulLogoImage ='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -59,6 +59,7 @@ function app() {
             playlists: [ ],
             status: "loading",
             elapsed: '0:00',
+            duration: '0:00',
             song: DefaultSongText,
             currentStation: null,
             currrentSongId: null,
@@ -179,6 +180,7 @@ function app() {
         data.currentStation = null;
         currrentSongId = null;
         data.elapsed = '0:00';
+        data.duration = '0:00'
         data.song = "";
     }
 
@@ -312,13 +314,15 @@ function app() {
                 timeout = Math.min(Math.max(timeout - timeoutShorterToRecoverIn10Secs, 0), 2000);
                 timer.displayedTime -= timeoutShorterToRecoverIn10Secs;
             }
+
         } else if(data.status === 'paused') {
             timer.displayedTime = timer.mpdLastUpdate;
         } else {
             timer.displayedTime = 0;
         }
-
         changeDisplayTimer(timer.displayedTime);
+        
+        // changeProgressBar(timer.displayedTime);
         timer.lastDisplayTimestamp = Date.now();
         if(data.status === 'playing' && (Date.now() - timer.lastMpdUpdateTimestamp) > 10000) {
 
@@ -392,9 +396,16 @@ function app() {
     setCurrentStation = function(msg) {
         var self = this;
         var found = false;
-        if(!isNaN(msg.time))
-        setDOMelementInnerHtml('duration', ' ('+ convertTime(msg.time)+')')
-        setDOMelementInnerHtml('duration', convertTime(msg.time))
+        
+        if(typeof(msg.time) != 'undefined' && msg.time != null) {
+        // setDOMelementInnerHtml('duration', ' ('+ convertTime(msg.time)+')')
+            data.duration = msg.time
+            
+        } else {
+            data.duration = 0;
+            
+        }
+        setDOMelementInnerHtml('duration', convertTime(data.duration))
         setQueueCurrentSong(msg.id);
         data.stationList.forEach(function(stationData) {
             if(stationData.stream === msg.file) {
@@ -441,8 +452,10 @@ function app() {
     }
 
     setSongName = function(title, album, artist, file) {
-        if(!title && !album && !artist) {
+
+        if((!title && !album && !artist) && (typeof file != 'undefined' && file.length > 0)){
             this.song = file;//DefaultSongText;
+             
         } else {
             var text = '';
             if(typeof artist != 'undefined' && artist.length > 0) {
@@ -453,6 +466,8 @@ function app() {
             // }
             if(typeof title != 'undefined' && title.length > 0) {
                 text += ((text.length > 0) ? ' - ' : '') + title;
+            }  else {
+                text = DefaultSongText;
             }
             this.song = text;
         }
@@ -461,10 +476,36 @@ function app() {
     };
 
     changeDisplayTimer = function(ms) {
+        // console.log(data.duration)
         var timeInSec = ms/1000;
+        var pro = (timeInSec*100)/data.duration
+        var w = 'width: ' + pro + '%';
+
         elapsed = convertTime(timeInSec)//strToDisplay;
         setDOMelementInnerHtml('elapsed', elapsed)
+        setDOMelementStyle('myBar',w )
+        setDOMelementStyle('dot','margin-left:'+pro+'%')
+
     };
+
+    changeProgressBar = function(ms) {
+        var timeInSec = ms/1000;
+    var pro = (timeInSec*100)/data.duration
+    
+        var w = 'width: ' + pro + '%';
+        
+
+        // $(document).ready(function(){
+            console.log(w)
+         
+        // }
+        setDOMelementStyle('myBar',w )
+        setDOMelementStyle('dot','margin-left:'+pro+'%')
+        
+        
+
+
+    }
 
     cutString = function (data,maxlen){
         return data.substring(0, maxlen-3) + '...';
