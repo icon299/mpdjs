@@ -179,9 +179,14 @@ color: #AAA;
   var newPos;
   var seekto;
   var progressDiv = document.getElementById("progressDiv");
+  // var progressDot = document.getElementById("dot");
+  // progressDot.addEventListener("mousedown", function(event){ 
+  //   // seeking=true; 
+  //   console.log("dot", event.clientX)
+  // });
   progressDiv.addEventListener("mousedown", function(event){ 
-    seeking=true; 
-    seek(event); 
+     seeking=true; 
+     seek(event); 
     console.log("mouse")
   });
   // progressDiv.addEventListener("mousemove", function(event){ seeking=true; }); 
@@ -189,10 +194,13 @@ color: #AAA;
   function seek(event){
       if(seeking){
         newPos = event.clientX - progressDiv.offsetLeft;
-        seekto = Math.floor(data.duration * (newPos/progressDiv.style.width))
-        console.log(seekto)
+        seekto = Math.floor(data.duration * (newPos/270))
+        console.log("SEEK_CUR", seekto)
         // setDOMelementStyle('myBar', 'width:'+ newPos + 'px' )
-        sendWSSMessage("SEEK_CUR", seekto);
+        if (seekto <= data.duration || seekto >= 0 ) {
+          sendWSSMessage("SEEK_CUR", seekto);  
+        }
+        
           //seekto = audio.duration * (seekslider.value / 100);
           //audio.currentTime = seekto;
       }

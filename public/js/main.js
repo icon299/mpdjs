@@ -490,21 +490,13 @@ function app() {
 
     changeProgressBar = function(ms) {
         var timeInSec = ms/1000;
-    var pro = (timeInSec*100)/data.duration
-    
+        var pro = (timeInSec*100)/data.duration
         var w = 'width: ' + pro + '%';
-        
-
         // $(document).ready(function(){
             console.log(w)
-         
         // }
         setDOMelementStyle('myBar',w )
         setDOMelementStyle('dot','margin-left:'+pro+'%')
-        
-        
-
-
     }
 
     cutString = function (data,maxlen){

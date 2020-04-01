@@ -27,8 +27,9 @@
       <ul id="aList">
       <% item.forEach(function(item){ %>
         <li>
-          <a href=""><img class="image" src="/img/playlist.png" alt="item.station"></a>
-          <div onclick="getPage('/radio')">
+          <div onclick='getPage("albums?q=<%=item.Artist%>")'>
+          <img class="image" src="/img/playlist.png" alt="item.station">
+          
             <span class="artistname"><%=item.Artist%></span>
             <!-- <span class="comment"><%=item.A%></span> -->
             <span class="arrow"></span> 

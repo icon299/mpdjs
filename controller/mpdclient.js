@@ -248,8 +248,7 @@ function sendStatusRequest(callback) {
                 mpdStatusOptions.single = status.single;
                 mpdStatusOptions.consume = status.consume;
                 mpdStatusOptions.currentsong = mpdNow.songid
-
-                console.log("mpdOptions_st: ", mpdStatusOptions.currentsong)
+                // console.log("mpdOptions_st: ", mpdStatusOptions.currentsong)
                 callback(null, status);
             }
     });
@@ -683,7 +682,7 @@ function getAlbumArt(albumName, callback) {
 
 }
 
-function getAlbumsForArtist (artist, callback){
+function mpdGetAlbumsForArtist (artist, callback){
   var obj = {}
   var albumArtist = []
   sendCommands(cmd("list album artist", [artist.Artist]), function(err,msg){
@@ -697,7 +696,7 @@ function getAlbumsForArtist (artist, callback){
         obj = Object.assign(artistAlbums[i],artist)
         albumArtist.push(obj)
       }
-      // debug('getAlbumsForArtist', albumArtist)
+      debug('getAlbumsForArtist', albumArtist)
       callback(null, albumArtist)
     }
   })
@@ -723,7 +722,8 @@ function mpdGetArtistsAlbums (callback) {
       callback(err)
     } else {
       artistArray.forEach(function(item, index, array) {
-          getAlbumsForArtist(item, function(err, data){
+        // debug("ATIST", item.Artist)
+          mpdGetAlbumsForArtist(item, function(err, data){
             // debug(data)
             for (var i = data.length - 1; i >= 0; i--) {
               albumArtistArr.push(data[i])
@@ -813,7 +813,8 @@ function getQuenue(callback) {
             } else {
                 // var queue = parseQuenueMessage(msg);
                 //console.log('queue: ', queue)
-                var queue = parseMpdMessage(msg, 'Id');
+                // var queue = parseMpdMessage(msg, 'Id');
+                var queue = parseMpdOutput(msg, 'file');
                 callback(null,queue);
             }
         });
@@ -902,14 +903,15 @@ function parseMpdOutput (msg, delimiters ) {
         obj = {}
       } 
     }
-
+    if (keyValue[1]==='time') {
+      keyValue[2] = convertTime(keyValue[2])
+    } 
     obj[keyValue[1]] = keyValue[2]
   })
   results.push(obj)
   // console.log('push end')
   return results;
 }
-
 
 function parseMpdMessage(msg, lastEntry) {
   // var lastEntry = 'Id';
@@ -943,10 +945,6 @@ function parseMpdMessage(msg, lastEntry) {
   })
   return results;
 }
-
-    
-
- 
 
 function findCoverImage (item, callback) {
     item.forEach(function(a){
@@ -1048,18 +1046,11 @@ var self = module.exports = {
     playlistSongs: function playlistSongs(playlist, callback) {
         getPlaylistSongs(playlist, callback);
     },
-
-    // albumArt: function albumArt(url, callback) {
-    //     getAlbumart(url, callback)
-    // },
     getDirList: function getDirList( url, param, callback) {
         getDir(url, param, callback)
     },
-    // getAlbum: function getAlbumLib(callback) {
-    //     getAlbum(callback)
-    // },
-    getArtists: function getArtists(q, callback) {
-        mpdGetArtists( q, callback)
+    getArtists: function getArtists(callback) {
+        mpdGetArtists(callback)
     },
     testCommand: function testCommand(cmd, arg, callback) {
         testCommandMPD(cmd, arg, callback)
@@ -1087,20 +1078,15 @@ var self = module.exports = {
       debug('Get Albums by Artists')
         mpdGetArtistsAlbums(callback)
     },
-    getArtists: function getAlbums(callback) {
-      debug('Get Artists')
-        mpdGetArtists(callback)
+    getAlbumsForArtist : function getAlbumsForArtist(artist, callback) {
+      mpdGetAlbumsForArtist(artist, callback)
     },
     getMpdStats: function getMpdStats(callback) {
         sendStatsRequest(callback)
     },
     toggleOption: function toggleOption(option, callback) {
-        //debug('OPTION:', option)
         toggleMpdOptions(option, callback)
     },
-    // getOptions: function getOptions (option, callback) {
-    //     getMpdOptions(option, callback)
-    // },
     playId: function playId(id, callback) {
         playSongId(id, callback)
     },
