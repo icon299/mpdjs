@@ -27,10 +27,10 @@
       <ul id="aList">
       <% item.forEach(function(item){ %>
         <li>
-          <div onclick='getPage("albums?q=<%=item.Artist%>")'>
+          <div onclick='getPage("albums?q=<%=item.artist%>")'>
           <img class="image" src="/img/playlist.png" alt="item.station">
           
-            <span class="artistname"><%=item.Artist%></span>
+            <span class="artistname"><%=item.artist%></span>
             <!-- <span class="comment"><%=item.A%></span> -->
             <span class="arrow"></span> 
           </div>

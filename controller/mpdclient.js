@@ -38,16 +38,19 @@ function connect() {
     mpdOptions.host = '127.0.0.1';
 
     mpdClient = mpd.connect(mpdOptions);
-    fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
-        console.log(data)
-    })
+    // fileclient.parseMPDConfig('D:/mpd/mpd.conf', (data) => {
+    //     console.log(data)
+    // })
 
     mpdClient.on('ready', function() {
         console.log('MPD client ready and connected to ' + mpdOptions.host + ':' + mpdOptions.port);
         mpdStatus = Status.ready;
         console.time('doBase');
         insertArtistData(1, function(err){
-        console.timeEnd('doBase')
+          if (err) {
+            console.log(err)
+          }
+          console.timeEnd('doBase')
         })
 
 
@@ -185,27 +188,34 @@ function insertArtistData(clear, callback) {
   mpdGetArtistsAlbums(function(err, data){
      // debug('+++++++++++++ ArtistsAlbums ++++++++++\n', data)
     var searchResult = [];
+    var albumCover = '';
+    var albumDir;
     //var obj = {}
 
     data.forEach(function(item, index, array){
-      sendCommands(cmd("find album",[item.Album]), function(err, msg){
+      sendCommands(cmd("find album",[item.album]), function(err, msg){
         if (err) {
           console.log(err)
         } else {
-          searchResult = mpd.parseArrayMessage(msg)
-           //debug("======== FIND ========", item.Album, item.Artist, searchResult)
+          searchResult = parseMpdOutput(msg,'file')
+          // searchResult = mpd.parseArrayMessage(msg)
+           // debug("======== FIND ========", item.album, item.artist, searchResult)
           var song_count = 0;
           for (var i = 0; i < searchResult.length; i++) {
-            if (searchResult[i].Artist == item.Artist) {
+            if (searchResult[i].artist == item.artist) {
               if (searchResult[i].hasOwnProperty('file')) {
                 song_count ++
                 if (song_count == 1) {
                  // debug("======== FIND ========", item.Album, item.Artist, searchResult[i])
-                  var albumDir = path.dirname(searchResult[i].file)
+                  albumDir = path.dirname(searchResult[i].file)
+
+                  // albumCover = fileclient.searchCover(albumDir)
+                  // debug("albumCover", albumCover)
                   var obj = { 
-                    Artist:searchResult[i].Artist,
-                    Album:searchResult[i].Album,
+                    artist:searchResult[i].artist,
+                    album:searchResult[i].album,
                     path: albumDir,
+                    cover: fileclient.searchCover(albumDir)
                         
                         // file: searchResult[i].file
                   }
@@ -221,6 +231,7 @@ function insertArtistData(clear, callback) {
             if (err) {
               console.log(err)
             } else {
+              // console.log(obj)
 
                         //debug('end insert record', Math.floor(Date.now()/1000));
                         //debug('+++++++++ inserting ++++++++++++\n', newData)
@@ -231,6 +242,7 @@ function insertArtistData(clear, callback) {
     })
      // callback(err)
     })
+  callback(null)
   })
 }
 
@@ -377,7 +389,7 @@ function getPlaylists(callback){
             if(err) {
                 callback(err);
             } else {
-                var playlists = mpd.parseArrayMessage(msg);
+                var playlists = parseMpdOutput(msg, 'playlist');
                 callback(null, playlists);
             }
         });
@@ -389,7 +401,7 @@ function getPlaylistSongs(playlist,callback){
             if(err) {
                 callback(err);
             } else {
-                var playlistSong = mpd.parseArrayMessage(msg);
+                var playlistSong = parseMpdOutput(msg, 'file');
                 //var playlistSong = msg;
                 callback(null, playlistSong);
             }
@@ -512,17 +524,29 @@ function doClearQueue(callback) {
   })
 }
 
-function queueAddId(fileList) {
-  fileList.forEach( function(item, index, array) {
-    sendCommands([cmd("addid", [item.file])],
+function queueAddId(fileList, callback) {
+  // debug('PLAY:', play)
+  // var song = 0;
+  var firstSong = 0;
+  
+  for (var i = 0; i < fileList.length; i++) {
+
+  console.log(fileList[i].file)
+  // fileList.forEach( function(item, index, array) {
+    sendCommands([cmd("addid", [fileList[i].file])],
         function(err, msg) {
           if (err) {
             callback(err);
           } else {
-            debug("SONG_ID", msg)
+            var msg = mpd.parseKeyValueMessage(msg);
+            if (!firstSong) {
+              firstSong  = msg.Id
+              debug("SONG_ID", msg.Id)
+              callback(null, firstSong)
+            }
           }
     })
-  })
+  }
 
 }
 function addFolderToQueue(folder, clearQueue, callback) {
@@ -549,26 +573,72 @@ function addFolderToQueue(folder, clearQueue, callback) {
     
 }
 
-function addAlbumFilesToQueue(album, clearQueue, callback) {
-  // var songList;
-  debug("ALBUM:", album, "CLEAR:", clearQueue)
-  sendCommands(cmd("find album",[album]), function(err, msg){
+function addAlbumFilesToQueue(data, callback) {
+  var artistSongList = []
+  // debug("ALBUM:", album, "ARTIST:", artist, "CLEAR:", clearQueue)
+  sendCommands(cmd("find album",[data.album]), function(err, msg){
     if (err) {
       callback(err)
     } else {
       var songList = parseMpdOutput(msg,'file')
-      if (clearQueue) {
+      for (var i = 0; i < songList.length; i++) {
+      // songList.forEach(function( item, index, array){
+        if (songList[i].artist === data.artist) {
+          artistSongList.push(songList[i])
+        }
+      }
+      if (data.clear) {
         doClearQueue(function(err){
           if (err) {
             console.log(err)
           } else {
-            debug("songList", songList)
-            queueAddId(songList)
+            // debug("songList", songList)
+            // queueAddId(songList)
+            queueAddId(artistSongList, function(err, songid){
+              if (data.play) {
+                sendCommands(cmd("playid",[songid]), function(err,msg){
+                  if (err) {
+                    console.log(err)
+                  } else {
+
+                  }
+                })
+              } else {
+                sendCommands([cmd("playid",[songid]), cmd("pause",[1])], function(err,msg){
+                  if (err) {
+                    console.log(err)
+                  } else {
+
+                  }
+                })
+              }
+            })
           }
 
         })
       } else {
-        queueAddId(songList)
+        queueAddId(artistSongList, function(err, songid){
+          debug("PLAY", data)
+          if (data.play) {
+                sendCommands(cmd("playid",[songid]), function(err,msg){
+                  if (err) {
+                    console.log(err)
+                  } else {
+
+                  }
+                })
+              } else {
+                sendCommands([cmd("playid",[songid]), cmd("pause",[1])], function(err,msg){
+                  if (err) {
+                    console.log(err)
+                  } else {
+
+                  }
+                })
+              }          
+
+        })
+        // queueAddId(songList)
       }
     
     }
@@ -685,18 +755,18 @@ function getAlbumArt(albumName, callback) {
 function mpdGetAlbumsForArtist (artist, callback){
   var obj = {}
   var albumArtist = []
-  sendCommands(cmd("list album artist", [artist.Artist]), function(err,msg){
+  sendCommands(cmd("list album artist", [artist.artist]), function(err,msg){
     if (err) {
       callback(err)
     } else {
-      var artistAlbums = parseMpdOutput(msg)
+      var artistAlbums = parseMpdOutput(msg,'album')
       // var artistAlbums = mpd.parseArrayMessage(msg)
 
       for (var i = artistAlbums.length - 1; i >= 0; i--) {
         obj = Object.assign(artistAlbums[i],artist)
         albumArtist.push(obj)
       }
-      debug('getAlbumsForArtist', albumArtist)
+      // debug('getAlbumsForArtist', albumArtist)
       callback(null, albumArtist)
     }
   })
@@ -708,6 +778,7 @@ function mpdGetArtists(callback) {
       callback(err);
     } else {
       var artistsArray = parseMpdOutput(msg)
+      // debug("mpdGetArtists", artistsArray)
         callback(null, artistsArray)
     }
   });
@@ -724,16 +795,16 @@ function mpdGetArtistsAlbums (callback) {
       artistArray.forEach(function(item, index, array) {
         // debug("ATIST", item.Artist)
           mpdGetAlbumsForArtist(item, function(err, data){
-            // debug(data)
+            // debug("mpdGetAlbumsForArtist", data)
             for (var i = data.length - 1; i >= 0; i--) {
               albumArtistArr.push(data[i])
             }
             if (index == array.length -1) {
               albumArtistArr.sort(function(a, b){
-                if (a.Album > b.Album) {
+                if (a.album > b.album) {
                   return 1;
                 }
-                if (a.Album < b.Album) {
+                if (a.album < b.album) {
                   return -1;
                 }
                 return 0;
@@ -891,7 +962,7 @@ function parseMpdOutput (msg, delimiters ) {
       throw new Error('Could not parse entry "' + lsline + '"')
     }
 
-    keyValue[1].toLowerCase();
+    keyValue[1] = keyValue[1].toLowerCase();
     // debug("keyValue", keyValue[1])
     
     if (Object.keys(obj).length > 0) {
@@ -1099,8 +1170,10 @@ var self = module.exports = {
     doReadDir: function doReadDir(path,callback) {
         readDir(path,callback)
     },
-    doAddAlbumFToQueue: function doAddAlbumsToQueue(album, clearQueue, callback) {
-        addAlbumFilesToQueue(album, clearQueue, callback)
+    // doAddAlbumFToQueue: function doAddAlbumsToQueue(album, artist, clearQueue, play, callback) {
+    doAddAlbumFToQueue: function doAddAlbumsToQueue(msg, callback) {
+      addAlbumFilesToQueue(msg, callback)
+        // addAlbumFilesToQueue(album, artist, clearQueue, play, callback)
     },
     doAddToFavorites: function doAddToFavorites() {
       AddToFavorites()

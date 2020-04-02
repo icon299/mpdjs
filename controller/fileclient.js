@@ -40,17 +40,19 @@ var saveasJSON = function(msg, callback) {
   })
 }
 
-function doSearchCover(dirPath, callback){
-  fs.readdir(dirPath, function (err, files) {
-    if (err) {
-      console.log(err);
+function doSearchCover(dirPath){
+  var result;
+  //fs.readdir(dirPath, function (err, files) {
+    //if (err) {
+      //console.log(err);
       // return;
-    } else {
-     
+    //} else {
+     result = dirPath + 'cover.fff'
+     console.log("cover:", result)
 
-       callback(null, files)
-  }
-  });
+       return result
+  //}
+  //});
 }
 
 function parseConfig(config, callback) { 
@@ -110,8 +112,8 @@ var self = module.exports = {
     parseMPDConfig: function parseMPDConfig(config, callback) {
       parseConfig(config, callback)
     },
-    searchCover: function searchCover(path, callback) {
-      doSearchCover(path, callback)
+    searchCover: function searchCover(path) {
+      doSearchCover(path)
     } 
 
 }

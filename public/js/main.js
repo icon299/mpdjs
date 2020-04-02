@@ -263,10 +263,10 @@ function app() {
         sendWSSMessage('ADDTOQUENUE', {url: url})
     };
 
-    onAddAlbumToQueue = function(album,clear) {
+    onAddAlbumToQueue = function(album, artist, play, clear) {
         // console.log("onAddAlbumToQueue", album, clear)
         // setDefaultStatus();
-        sendWSSMessage('ADDALBUMTOQUEUE', {album: album, clear: clear})  
+        sendWSSMessage('ADDALBUMTOQUEUE', {album: album, artist:artist, play:play, clear: clear})  
     }
     onAddFolderToQueue = function(folder, clear) {
         // console.log("onAddAlbumToQueue", album, clear)

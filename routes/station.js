@@ -95,7 +95,7 @@ router.get('/albums', (req, res) => {
   param = typeof param !== 'undefined' ? param : '';
   if (param !== '') {
     var artistName = {}
-    artistName.Artist = param 
+    artistName.artist = param 
     mpdClient.getAlbumsForArtist(artistName, function(err, item){
     res.render('albums', {item});
   })  

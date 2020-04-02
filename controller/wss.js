@@ -237,8 +237,9 @@ module.exports = {
                         })
                         break;
                     case "ADDALBUMTOQUEUE":
-                        console.log("ADDALBUMTOQUEUE",msg.data.album)
-                        mpdClient.doAddAlbumFToQueue(msg.data.album, msg.data.clear, function(err,album){
+                        console.log("ADDALBUMTOQUEUE",msg.data.album, msg.data.artist)
+                        // mpdClient.doAddAlbumFToQueue(msg.data.album, msg.data.artist, msg.data.play, msg.data.clear, function(err,album){
+                        mpdClient.doAddAlbumFToQueue(msg.data, function(err,album){                          
                             if(err) {
                                 sendWSSMessage(ws, 'MPD_OFFLINE');
                             } else {

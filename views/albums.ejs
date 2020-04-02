@@ -31,10 +31,10 @@
         <li id="currentAlbum">
           <img class="image" src="/img/playlist.png" alt="item.station">
           
-            <span class="name"><%=item.Album%></span>
-            <span class="comment"><%=item.Artist%></span>
+            <span class="name"><%=item.album%></span>
+            <span class="comment"><%=item.artist%></span>
           
-            <a href="javascript:void(0);" name="sdsdsa" class="edit" data-_id="<%=item.Album %>" data-toggle="modal" data-target="#myModalAdd"><span class="navicon"></span></a>
+            <a href="javascript:void(0);" name="sdsdsa" class="edit" data-_id="<%=item.album %>" data-artist="<%=item.artist %>" data-toggle="modal" data-target="#myModalAdd"><span class="navicon"></span></a>
           <!-- </div> -->
         </li>
       <% }) %>
@@ -103,18 +103,18 @@ $(document).ready(function(){
     $("#addToQueue").click (function(){
         
         // console.log("addToQueue", alb.data('_id'))
-        onAddAlbumToQueue(alb.data('_id'),0)
+        onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0, 0)
          // $('#ModalOpt').modal('hide');
     })
 
     $("#clearAndAdd").on('click', function(){
       // console.log("clearAndAdd:", alb.data('_id'))
-         onAddAlbumToQueue(alb.data('_id'),1)
+         onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0,1)
           // $('#ModalOpt').modal('hide');
     })
         $("#addAndPlay").on('click', function(){
       
-           onAddAlbumToQueue(alb.data('_id'),0)
+           onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),1,0)
        })
 
 })  

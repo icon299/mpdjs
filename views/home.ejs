@@ -143,18 +143,18 @@ color: #AAA;
         <% if (item.length > 0) { %>                
           <li class="title">Playlist</li>
           <% item.forEach(function(item){ %>
-          <% if (item.Id !== undefined) {%>
-          <li id="quenue_<%=item.Id%>" onclick="sendPlayId('<%=item.Id%>')">
+          <% if (item.id !== undefined) {%>
+          <li id="quenue_<%=item.id%>" onclick="sendPlayId('<%=item.id%>')">
             <div>
               <span class="name">
-                <%= item.Title %>
+                <%= item.title %>
               </span>
               <span class = "comment">
-              <% if (item.Artist) { %>
-                <%=item.Artist%> - %>
+              <% if (item.artist) { %>
+                <%=item.artist%> - %>
               <% } %>
-              <% if (item.Album) { %>
-                <%=item.Album %> %>
+              <% if (item.album) { %>
+                <%=item.album %> %>
               <% } %>
               </span>
                         <!-- <span class="arrow" onclick="onRemoveFromQueue('<%=item.Id%>')"> -->
