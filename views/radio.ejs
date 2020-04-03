@@ -1,0 +1,241 @@
+<% include ./header.ejs %>
+<style>
+  .bigfield input {
+  -webkit-appearance: none;
+  border: 0;
+  height: 100%;
+  padding: 0;
+  -webkit-border-radius: 0;
+  background: transparent;
+  font-weight: bold;
+  font-size: 17px;
+  padding-left: 5px;
+  width:295px
+}
+li.bigfield, li.smallfield {
+  position: relative;
+  list-style-type: none;
+  display: block;
+  height: 43px;
+  overflow: hidden;
+  border-top: 1px solid #878787;
+  width: auto;
+}
+
+.pageitem {
+  -webkit-border-radius: 8px;
+  background-color: #fff;
+  border: #878787 solid 1px;
+  font-size: 12pt;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  display: block;
+  height: auto;
+  width: auto;
+  margin: 3px 9px 17px;
+  list-style: none;
+}
+</style>
+<body>
+  <div id="topbar">
+    <div id="title">Radio</div>
+      <div id="leftnav">
+        <a href="/">
+          <img src="img/home.png" alt="Home">
+        </a>
+      </div>
+    <div id="rightnav">
+      <a href="/menu">Menu</a>
+      <!-- <a href="/menu">Edit</a> -->
+          <!-- <img src="img/navicon.png" alt="Menu"></a> -->
+    </div>
+  </div>
+
+<% include ./error-log-msg.ejs %>
+
+
+  <div class="applist" id="queueList">
+    <div id="content">
+    <% if (item.length) { %>
+      <ul>
+      <% item.forEach(function(item){ %>
+        <li>
+           <span onclick="onPlayStation('<%= item.stream %>')">
+            <img class="image" src="<%= item.logo %>" alt="<%= item.station %>">
+          </span>
+          <div>
+            <span class="name"><%= item.station %></span>
+            <span class = "comment"><%= item.desc %></span>
+ <a href="javascript:void(0);" name="sdsdsa" class="edit" data-_id="<%=item.station %>"  data-toggle="modal" data-target="#ModalOpt"><span class="navicon"></span></a>
+                  <!-- <span class="arrow" onclick="onAddToQuenue('<%=item.path%>')"> -->
+                  <!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->
+          </div>
+        </li>
+      <% }) %>
+        <li class="withimage" style="border:none">
+          <img  src="/img/wdot.png">
+        </li>
+      </ul>
+    <% } %>
+    </div>
+  </div>
+
+  <% include player.ejs %>
+
+  <div  class="modal" id="ModalOpt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm">
+     <div class="modal-content">
+      <div class="modal-body">
+      <div class="list">
+        <div id="content">
+          <ul>
+            
+            <li id="addNewStation" data-dismiss="modal">
+              <div >
+                <span class="name">Add new station</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          
+            <li id="clearAndAdd" data-dismiss="modal">
+              <div >
+                <span class="name">Edit station</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+            <li id="addAndPlay" data-dismiss="modal">
+              <div >
+                <span class="name">Delete station</span>
+                <span class="arrow"></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>  
+<!-- Add New Product Modal-->
+<form action="/save" method="post" class="">
+  <div  class="modal" id="myModalAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-sm" role="document">
+     <div class="modal-content">
+       <div class="modal-header ">
+         <p class="modal-title modal-heading" id="exampleModalLabel">Add New Station</p>
+       </div>
+       <div class="modal-body" id="content">
+          <fieldset>
+          <ul class="pageitem">
+          <li class="bigfield">
+             <input type="text" name="product_name" class=" pure-input-1" placeholder="Station Name" required>
+         </li>
+         
+             <input type="text" name="product_price" class=" pure-input-1" placeholder="stream" required>
+         
+         
+            <input type="text" name="desc" class="pure-input-1 " placeholder="desc">
+         
+         
+            <input type="text" name="logo" class="pure-input-1 " placeholder="logo">
+           </ul> 
+         </fieldset>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="pure-button button-secondary" data-dismiss="modal">Cancel</button>
+         <button type="submit" class="button-success pure-button">Save</button>
+       </div>
+     </div>
+   </div>
+  </div>
+</form>
+
+<!-- Edit Product Modal-->
+<form action="/update" method="post" class="">
+  <div class="modal" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title modal-heading" id="exampleModalLabel">Edit Station</p>
+        </div>
+        <div class="modal-body">
+          <div class="">
+              <input type="text" name="product_name" class="pure-input-1 product_name" placeholder="Product Name" required>
+          </div>
+          <div class="">
+              <input type="text" name="product_price" class="pure-input-1 price" placeholder="stream" required>
+          </div>
+          <div class="">
+              <input type="text" name="desc" class="pure-input-1 desc" placeholder="description">
+          </div>
+           <div class="">
+              <input type="text" name="logo" class="pure-input-1 logo" placeholder="logo">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" name="_id" class="form-control product_id" required>
+          <button type="button" class="pure-button button-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="button-success pure-button">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Delete Product Modal-->
+<form id="add-row-form" action="/delete" method="post" class="pure-form pure-form-aligned pure-u-1">
+  <div class="modal" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header modal-heading">
+          <p class="modal-title" id="myModalLabel">Are You Sure To Delete This Station?</p>
+        </div>
+        <div class="modal-body pure-control-group">
+          <p id="pn">Station Name</p>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" name="_id" class="form-control product_id2" required>
+          <button type="button" class="pure-button button-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="button-error pure-button">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+  <% include footer.ejs %>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/modal.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    var alb = '';
+
+    $('#queueList').on('click','.edit',function(){
+      alb = $(this)
+      // $('#ModalOpt').modal('show');
+    });
+
+    $("#addNewStation").on('click',function(){
+      $('#myModalAdd').modal('show');
+        
+    })
+
+    $("#clearAndAdd").on('click', function(){
+      // console.log("clearAndAdd:", alb.data('_id'))
+         onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0,1)
+          // $('#ModalOpt').modal('hide');
+    })
+        $("#addAndPlay").on('click', function(){
+      
+           onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),1,0)
+       })
+  
+
+})  
+
+</script>
+
+</body>
+</html>

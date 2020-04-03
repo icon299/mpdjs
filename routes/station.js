@@ -52,7 +52,7 @@ router.get('/', function(req, res ) {
 
 router.get('/radio', function(req, res) {
     db.find({}).sort({id: 1}).exec(function (err, item) {
-    res.render('index',{item});
+    res.render('radio',{item});
   });
 });
 
@@ -163,7 +163,7 @@ router.delete('/db', function(req, res) {
 
 router.get('/edit',(req, res) => {
   db.find({}).sort({id: 1}).exec(function (err, stations) {
-    res.render('station_view',{stations});
+    res.render('radio_edit',{stations});
   });
 });
 
