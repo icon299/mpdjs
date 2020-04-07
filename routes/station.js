@@ -177,7 +177,7 @@ router.post('/save',(req, res) => {
                 logo: req.body.logo
               };
     db.insert(data, function (err,newData) {
-      res.redirect(303,'/edit');
+      res.redirect(303,'/radio');
     })
   })
 });
@@ -192,7 +192,7 @@ router.post('/update',(req, res) => {
                                     logo: req.body.logo }},
      {}, function(err) {
           if(err) throw err;
-      res.redirect(303,'/edit');
+      res.redirect(303,'/radio');
   })
 });
 
@@ -200,7 +200,7 @@ router.post('/update',(req, res) => {
 router.post('/delete',(req, res) => {
   db.remove({ _id: req.body._id},{}, function(err){
     if(err) throw err;
-    res.redirect(303,'/edit');
+    res.redirect(303,'/radio');
   })
 });
 

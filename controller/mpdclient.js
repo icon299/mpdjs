@@ -1171,7 +1171,7 @@ var self = module.exports = {
         readDir(path,callback)
     },
     // doAddAlbumFToQueue: function doAddAlbumsToQueue(album, artist, clearQueue, play, callback) {
-    doAddAlbumFToQueue: function doAddAlbumsToQueue(msg, callback) {
+    doAddAlbumFToQueue: function doAddAlbumFToQueue(msg, callback) {
       addAlbumFilesToQueue(msg, callback)
         // addAlbumFilesToQueue(album, artist, clearQueue, play, callback)
     },

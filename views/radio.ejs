@@ -1,5 +1,19 @@
 <% include ./header.ejs %>
 <style>
+.modal-form input[type="text"] {
+    padding: 0.5em 0.6em;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: .5em;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
   .bigfield input {
   -webkit-appearance: none;
   border: 0;
@@ -22,20 +36,9 @@ li.bigfield, li.smallfield {
   width: auto;
 }
 
-.pageitem {
-  -webkit-border-radius: 8px;
-  background-color: #fff;
-  border: #878787 solid 1px;
-  font-size: 12pt;
-  overflow: hidden;
-  padding: 0;
-  position: relative;
-  display: block;
-  height: auto;
-  width: auto;
-  margin: 3px 9px 17px;
-  list-style: none;
-}
+
+
+
 </style>
 <body>
   <div id="topbar">
@@ -67,7 +70,9 @@ li.bigfield, li.smallfield {
           <div>
             <span class="name"><%= item.station %></span>
             <span class = "comment"><%= item.desc %></span>
- <a href="javascript:void(0);" name="sdsdsa" class="edit" data-_id="<%=item.station %>"  data-toggle="modal" data-target="#ModalOpt"><span class="navicon"></span></a>
+ <a href="javascript:void(0);" name="sdsdsa" class="edit" data-toggle="modal" data-target="#ModalOpt"
+data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.station %>" data-product_price="<%= item.stream %>" data-desc="<%= item.desc %>" data-logo="<%= item.logo %>">
+  <span class="navicon"></span></a>
                   <!-- <span class="arrow" onclick="onAddToQuenue('<%=item.path%>')"> -->
                   <!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->
           </div>
@@ -98,13 +103,13 @@ li.bigfield, li.smallfield {
               </div>
             </li>
           
-            <li id="clearAndAdd" data-dismiss="modal">
+            <li id="editStation" data-dismiss="modal">
               <div >
                 <span class="name">Edit station</span>
                 <span class="arrow"></span>
               </div>
             </li>
-            <li id="addAndPlay" data-dismiss="modal">
+            <li id="deleteStation" data-dismiss="modal">
               <div >
                 <span class="name">Delete station</span>
                 <span class="arrow"></span>
@@ -118,30 +123,30 @@ li.bigfield, li.smallfield {
   </div>
 </div>  
 <!-- Add New Product Modal-->
-<form action="/save" method="post" class="">
+<form action="/save" method="post" class="modal-form">
   <div  class="modal" id="myModalAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-sm" role="document">
      <div class="modal-content">
        <div class="modal-header ">
          <p class="modal-title modal-heading" id="exampleModalLabel">Add New Station</p>
        </div>
-       <div class="modal-body" id="content">
-          <fieldset>
-          <ul class="pageitem">
-          <li class="bigfield">
-             <input type="text" name="product_name" class=" pure-input-1" placeholder="Station Name" required>
-         </li>
-         
-             <input type="text" name="product_price" class=" pure-input-1" placeholder="stream" required>
-         
-         
-            <input type="text" name="desc" class="pure-input-1 " placeholder="desc">
-         
-         
-            <input type="text" name="logo" class="pure-input-1 " placeholder="logo">
-           </ul> 
-         </fieldset>
-       </div>
+       <div class="modal-body">
+          <div class="">
+              <input type="text" name="product_name" class="pure-input-1" placeholder="Station" required>
+          </div>
+          <div class="">
+              <input type="text" name="product_price" class="pure-input-1" placeholder="stream" required>
+          </div>
+          <div class="">
+              <input type="text" name="desc" class="pure-input-1" placeholder="description">
+          </div>
+           <div class="">
+              <input type="text" name="logo" class="pure-input-1" placeholder="logo">
+          </div>
+<!--           <div class="">
+              <input type="text" name="id" class="pure-input-1" placeholder="id">
+          </div> -->
+        </div>
        <div class="modal-footer">
          <button type="button" class="pure-button button-secondary" data-dismiss="modal">Cancel</button>
          <button type="submit" class="button-success pure-button">Save</button>
@@ -152,16 +157,16 @@ li.bigfield, li.smallfield {
 </form>
 
 <!-- Edit Product Modal-->
-<form action="/update" method="post" class="">
+<form action="/update" method="post" class="modal-form">
   <div class="modal" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <p class="modal-title modal-heading" id="exampleModalLabel">Edit Station</p>
         </div>
         <div class="modal-body">
           <div class="">
-              <input type="text" name="product_name" class="pure-input-1 product_name" placeholder="Product Name" required>
+              <input type="text" name="product_name" class="pure-input-1 product_name" placeholder="Station" required>
           </div>
           <div class="">
               <input type="text" name="product_price" class="pure-input-1 price" placeholder="stream" required>
@@ -172,11 +177,14 @@ li.bigfield, li.smallfield {
            <div class="">
               <input type="text" name="logo" class="pure-input-1 logo" placeholder="logo">
           </div>
+<!--           <div class="">
+              <input type="text" name="_id" class="pure-input-1 id" placeholder="logo">
+          </div> -->
         </div>
         <div class="modal-footer">
-          <input type="hidden" name="_id" class="form-control product_id" required>
-          <button type="button" class="pure-button button-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="button-success pure-button">Update</button>
+          <input type="hidden" name="id" class="form-control id" required>
+          <button type="button" class=" button-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="button-success">Update</button>
         </div>
       </div>
     </div>
@@ -184,9 +192,9 @@ li.bigfield, li.smallfield {
 </form>
 
 <!-- Delete Product Modal-->
-<form id="add-row-form" action="/delete" method="post" class="pure-form pure-form-aligned pure-u-1">
+<form id="add-row-form" action="/delete" method="post" class="modal-form">
   <div class="modal" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header modal-heading">
           <p class="modal-title" id="myModalLabel">Are You Sure To Delete This Station?</p>
@@ -211,28 +219,53 @@ li.bigfield, li.smallfield {
 $(document).ready(function(){
 
     var alb = '';
+    var station_id
+    var product_name
+    var product_price
+    var station_desc
+    var station_logo
 
     $('#queueList').on('click','.edit',function(){
       alb = $(this)
-      // $('#ModalOpt').modal('show');
+      station_id = $(this).data('_id');
+      product_name = $(this).data('product_name');
+      product_price = $(this).data('product_price');
+      station_desc = $(this).data('desc');
+      station_logo = $(this).data('logo');
+      // console.log("pn",product_name)
     });
 
     $("#addNewStation").on('click',function(){
       $('#myModalAdd').modal('show');
-        
     })
 
-    $("#clearAndAdd").on('click', function(){
+    $("#editStation").on('click', function(){
+            
+       console.log("pn",station_id)
+      $('.id').val(station_id);
+      $('.product_name').val(product_name);
+      $('.price').val(product_price);
+      $('.product_id').val(station_id);
+      $('.desc').val(station_desc);
+      $('.logo').val(station_logo);
+      $('#EditModal').modal('show');
       // console.log("clearAndAdd:", alb.data('_id'))
-         onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0,1)
-          // $('#ModalOpt').modal('hide');
+      // onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0,1)
+      // $('#ModalOpt').modal('hide');
     })
-        $("#addAndPlay").on('click', function(){
-      
-           onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),1,0)
-       })
-  
 
+    $("#addAndPlay").on('click', function(){
+      onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),1,0)
+    })
+
+    $('#deleteStation').on('click',function(){
+      
+      
+      $('#DeleteModal').modal('show');
+      console.log(product_name, station_id);
+      $('.product_id2').val(station_id);
+      $('#pn').html(product_name);
+    });
 })  
 
 </script>
