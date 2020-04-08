@@ -35,8 +35,37 @@ li.bigfield, li.smallfield {
   border-top: 1px solid #878787;
   width: auto;
 }
-
-
+.inputfile {
+/*  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;*/
+}
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: black;
+    display: inline-block;
+}.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: red;
+}
+#output_image
+{
+ width: 57px;
+height: 57px;
+display: block;
+/*position: absolute;*/
+/*top: 4px;*/
+/*left: 4px;*/
+/*border: 1px solid rgb(73,102,145);*/
+/*-webkit-border-radius: 4px;*/
+background-color: white;
+/*-webkit-box-shadow: 0 0 2px 0px */
+}
 
 
 </style>
@@ -71,7 +100,7 @@ li.bigfield, li.smallfield {
             <span class="name"><%= item.station %></span>
             <span class = "comment"><%= item.desc %></span>
  <a href="javascript:void(0);" name="sdsdsa" class="edit" data-toggle="modal" data-target="#ModalOpt"
-data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.station %>" data-product_price="<%= item.stream %>" data-desc="<%= item.desc %>" data-logo="<%= item.logo %>">
+data-_id="<%= item._id %>" data-id="<%= item.id %>" data-station_name="<%= item.station %>" data-product_price="<%= item.stream %>" data-desc="<%= item.desc %>" data-logo="<%= item.logo %>">
   <span class="navicon"></span></a>
                   <!-- <span class="arrow" onclick="onAddToQuenue('<%=item.path%>')"> -->
                   <!-- <img src="img/remove.png" alt="" style="width: 15px;"> -->
@@ -132,7 +161,7 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.
        </div>
        <div class="modal-body">
           <div class="">
-              <input type="text" name="product_name" class="pure-input-1" placeholder="Station" required>
+              <input type="text" name="station_name" class="pure-input-1" placeholder="Station" required>
           </div>
           <div class="">
               <input type="text" name="product_price" class="pure-input-1" placeholder="stream" required>
@@ -166,7 +195,7 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.
         </div>
         <div class="modal-body">
           <div class="">
-              <input type="text" name="product_name" class="pure-input-1 product_name" placeholder="Station" required>
+              <input type="text" name="station_name" class="pure-input-1 station_name" placeholder="Station" required>
           </div>
           <div class="">
               <input type="text" name="product_price" class="pure-input-1 price" placeholder="stream" required>
@@ -177,12 +206,17 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.
            <div class="">
               <input type="text" name="logo" class="pure-input-1 logo" placeholder="logo">
           </div>
+          <div>
+            <input type="file" accept="image/*" name="photo" class="inputfile" onchange="preview_image(event)">
+            <!-- <label for="file">Choose a file</label> -->
+            <img class="station_logo" id="output_image" />
+          </div>
 <!--           <div class="">
               <input type="text" name="_id" class="pure-input-1 id" placeholder="logo">
           </div> -->
         </div>
         <div class="modal-footer">
-          <input type="hidden" name="id" class="form-control id" required>
+          <input type="hidden" name="_id" class="form-control _id" required>
           <button type="button" class=" button-secondary" data-dismiss="modal">Cancel</button>
           <button type="submit" class="button-success">Update</button>
         </div>
@@ -215,12 +249,27 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-product_name="<%= item.
 
 <script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/modal.min.js"></script>
+
+<script type='text/javascript'>
+function preview_image(event) 
+{
+ var reader = new FileReader();
+ reader.onload = function()
+ {
+  var output = document.getElementById('output_image');
+  output.src = reader.result;
+ }
+ reader.readAsDataURL(event.target.files[0]);
+}
+</script>
+
 <script>
+
 $(document).ready(function(){
 
     var alb = '';
     var station_id
-    var product_name
+    var station_name
     var product_price
     var station_desc
     var station_logo
@@ -228,10 +277,11 @@ $(document).ready(function(){
     $('#queueList').on('click','.edit',function(){
       alb = $(this)
       station_id = $(this).data('_id');
-      product_name = $(this).data('product_name');
+      station_name = $(this).data('station_name');
       product_price = $(this).data('product_price');
       station_desc = $(this).data('desc');
       station_logo = $(this).data('logo');
+      console.log("edit", station_name, station_id);
       // console.log("pn",product_name)
     });
 
@@ -242,12 +292,14 @@ $(document).ready(function(){
     $("#editStation").on('click', function(){
             
        console.log("pn",station_id)
-      $('.id').val(station_id);
-      $('.product_name').val(product_name);
+       console.log(station_name, station_id);
+      $('._id').val(station_id);
+      $('.station_name').val(station_name);
       $('.price').val(product_price);
       $('.product_id').val(station_id);
       $('.desc').val(station_desc);
       $('.logo').val(station_logo);
+      $('.station_logo').attr("src", station_logo)
       $('#EditModal').modal('show');
       // console.log("clearAndAdd:", alb.data('_id'))
       // onAddAlbumToQueue(alb.data('_id'),alb.data('artist'),0,1)
@@ -262,9 +314,9 @@ $(document).ready(function(){
       
       
       $('#DeleteModal').modal('show');
-      console.log(product_name, station_id);
+      console.log(station_name, station_id);
       $('.product_id2').val(station_id);
-      $('#pn').html(product_name);
+      $('#pn').html(station_name);
     });
 })  
 

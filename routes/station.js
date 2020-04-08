@@ -171,7 +171,7 @@ router.post('/save',(req, res) => {
   db.findOne({}).sort({id : -1}).exec(function(err, item){
     if(err) callback(err);
     var data = {id: item.id + 1,
-                station: req.body.product_name,
+                station: req.body.station_name,
                 stream: req.body.product_price,
                 desc: req.body.desc,
                 logo: req.body.logo
@@ -186,7 +186,7 @@ router.post('/save',(req, res) => {
 router.post('/update',(req, res) => {
  var item = req.body
   db.update({_id: req.body._id }, { $set: {
-                                    station: req.body.product_name,
+                                    station: req.body.station_name,
                                     stream: req.body.product_price,
                                     desc: req.body.desc,
                                     logo: req.body.logo }},
