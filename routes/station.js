@@ -5,10 +5,27 @@ var router = express.Router();
 var wss = require('../controller/wss.js');
 var mpdClient = require('../controller/mpdclient.js')
 const bodyParser = require('body-parser');
+const multer = require('multer');
+
 
 const path = require('path');
 var neDB = require('nedb');
 var dbFile = path.join(__dirname, '../data/station.db');
+var iPath = '/img/uploads/images'
+var upPath = path.join(__dirname, '../public' + iPath)
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, upPath)
+  },
+  filename: function (req, file, cb) {
+
+      cb(null, file.originalname)
+
+  }
+})
+
+
 
 const db = new neDB({ filename: dbFile,  autoload: true});
 
@@ -182,18 +199,39 @@ router.post('/save',(req, res) => {
   })
 });
 
+
+
 //route for update data
-router.post('/update',(req, res) => {
- var item = req.body
-  db.update({_id: req.body._id }, { $set: {
+router.post('/update', (req, res) => {
+  var rPath 
+  var item = req.body
+  // var up = upload.single('photo')
+  
+  
+var upload = multer({storage: storage}).single('photo');
+    upload(req, res, function(err){
+      // console.log(req.body.desc)
+      if(req.file)
+        rPath = path.join(iPath, req.file.filename)
+      else 
+        rPath = req.body.logo
+      db.update({_id: req.body._id }, { $set: {
                                     station: req.body.station_name,
                                     stream: req.body.product_price,
                                     desc: req.body.desc,
-                                    logo: req.body.logo }},
+                                    logo: rPath }},
      {}, function(err) {
           if(err) throw err;
       res.redirect(303,'/radio');
   })
+
+    })
+  
+  
+
+ 
+
+  
 });
 
 //route for delete data

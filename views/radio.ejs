@@ -36,23 +36,25 @@ li.bigfield, li.smallfield {
   width: auto;
 }
 .inputfile {
-/*  width: 0.1px;
+  width: 0.1px;
   height: 0.1px;
   opacity: 0;
   overflow: hidden;
   position: absolute;
-  z-index: -1;*/
+  z-index: -1;
 }
 .inputfile + label {
     font-size: 1.25em;
     font-weight: 700;
     color: white;
+    padding: 5px;
     background-color: black;
     display: inline-block;
-}.inputfile:focus + label,
-.inputfile + label:hover {
+}
+.inputfile:focus + label, .inputfile + label:hover {
     background-color: red;
 }
+
 #output_image
 {
  width: 57px;
@@ -186,7 +188,7 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-station_name="<%= item.
 </form>
 
 <!-- Edit Product Modal-->
-<form action="/update" method="post" class="modal-form">
+<form action="/update" method="post" class="modal-form" enctype="multipart/form-data">
   <div class="modal" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
       <div class="modal-content">
@@ -207,8 +209,8 @@ data-_id="<%= item._id %>" data-id="<%= item.id %>" data-station_name="<%= item.
               <input type="text" name="logo" class="pure-input-1 logo" placeholder="logo">
           </div>
           <div>
-            <input type="file" accept="image/*" name="photo" class="inputfile" onchange="preview_image(event)">
-            <!-- <label for="file">Choose a file</label> -->
+            <input type="file" accept="image/*" name="photo" class="inputfile" id="file" onchange="preview_image(event)">
+            <label for="file">Choose a file</label>
             <img class="station_logo" id="output_image" />
           </div>
 <!--           <div class="">
