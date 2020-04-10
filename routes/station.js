@@ -227,11 +227,6 @@ var upload = multer({storage: storage}).single('photo');
 
     })
   
-  
-
- 
-
-  
 });
 
 //route for delete data
